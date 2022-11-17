@@ -1,6 +1,7 @@
 
 # data = gpd.read_file("/home/ttmam/GitHub/DATAPROJECT1/datos_ini/barris-barrios.geojson")
 
+
 from matplotlib import pyplot
 from descartes import PolygonPatch
 import math
