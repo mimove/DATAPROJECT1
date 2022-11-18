@@ -13,26 +13,8 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
     ##########################################################
     
     
-    if type(barrios_in) is str:
-        
-        with open(barrios_in) as json_file:
-            json_data = json.load(json_file)
-
-        # Cargamos datos del file1.geojson en una variable solo con las geometría de los polígonos (barrios de Valencia), y en otra con todas las características de cada barrio (coordenadas poligono, nombre barrio, etc.)
-        
-        barrios_json = []
-
-        for i in range(len(json_data['features'])):
-            #Guardamos geometría de los poligonos del geojson
-            barrios_json.append(json_data['features'][i])           #Guardamos resto de campos de geojson
-
-
-        #Carga de datos con Geopandas para calcular la interseccion
-        
-        barrios_gpd = gpd.GeoDataFrame.from_features(barrios_json)
-        barrios_gpd.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
-    else:
-        barrios_gpd = barrios_in
+    
+    barrios_gpd = barrios_in
 
 
 
@@ -76,9 +58,9 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
 
         barrios_gpd['areaBarrio'] = barrios_gpd.geometry.area #Calculo del area de los barrios
 
-        merged_areas = merged.groupby('nombre')['areaVariable'].sum() # Sumamos todas las áreas de intersección por barrio
+        merged_areas = merged.groupby('nombre_barrio')['areaVariable'].sum() # Sumamos todas las áreas de intersección por barrio
         
-        barrios_gpd = barrios_gpd.merge(merged_areas, on='nombre', how='left') # Hacemos merge de la tabla Barrios con la tabla merged_areas
+        barrios_gpd = barrios_gpd.merge(merged_areas, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla merged_areas
 
         barrios_gpd = barrios_gpd.to_crs ('epsg:4326') #Se necesita convertir otra vez a epsg para poder tener las coordenadas GPS correctamente
 
@@ -93,9 +75,9 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
         
         print(merged[new_column])
            
-        var_merge = merged.groupby('nombre')[new_column].median()
+        var_merge = merged.groupby('nombre_barrio')[new_column].median()
 
-        barrios_gpd = barrios_gpd.merge(var_merge, on='nombre', how='left') # Hacemos merge de la tabla Barrios con la tabla var_merge
+        barrios_gpd = barrios_gpd.merge(var_merge, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla var_merge
 
     
 
@@ -118,35 +100,21 @@ def interseccion_puntos(file1 : str, file2 : str, col: str):
     ##                     EN CADA BARRIO                      ##
     #############################################################
 
-    #CARGAMOS LOS DATOS DE LOS BARRIOS
-    with open(file1) as json_file:
-        json_data = json.load(json_file)
-
-    barrios=[]
-    barrios_json = []
-    for i in range(len(json_data['features'])):
-        barrios.append(json_data['features'][i]['geometry'])    #Guardamos geometría de los poligonos del geojson
-        barrios_json.append(json_data['features'][i])           #Guardamos resto de campos de geojson
+    barrios_gpd = file1
 
     #CARGAMOS DATOS INCIALES DE LOS PUNTOS
     with open(file2) as json_file2:
         json_data2 = json.load(json_file2)
 
-    points=[]
     points_json=[]
 
     for i in range(len(json_data2['features'])):
         if json_data2['features'][i]['geometry'] is None:  # Si los datos de geometry que encuentra son NULL pasa a la siguiente linea
             pass
-        else:
-            points.append(json_data2['features'][i]['geometry'])   
+        else:  
             points_json.append(json_data2['features'][i])
 
     #CARGAMOS LOS DATOS CON GEOPANDAS PARA CALCULAR LA INTERSECCION
-
-    barrios_gpd = gpd.GeoDataFrame.from_features(barrios_json)
-    barrios_gpd.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
-    barrios_gpd.rename(columns ={'nombre':'barrio'}) 
 
 
     points_gpd = gpd.GeoDataFrame.from_features(points_json)
@@ -158,31 +126,37 @@ def interseccion_puntos(file1 : str, file2 : str, col: str):
     merged = gpd.overlay(barrios_gpd, points_gpd,   how='intersection', keep_geom_type=False) # Calculamos la intersección de los polígonos de barrios con los puntos
     merged.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
 
+    
+    merged_points = merged.groupby('nombre_barrio')['codigo_barrio'].count().reset_index(name=col) # Sumamos todas las áreas de intersección por barrio
+        
+    barrios_gpd = barrios_gpd.merge(merged_points, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla merged_areas
+
 
     ## GUARDANDO RESULTADO EN ARCHIVO .geojson
                                               
-    with open(f"interseccion_{col}.geojson", "w") as outfile:
-        outfile.write(merged.to_json())
+    # with open(f"interseccion_{col}.geojson", "w") as outfile:
+    #     outfile.write(merged.to_json())
 
     #CARGANDO DATOS CON GEOPANDAS PARA VER LA INTERSECCION
 
     # do the spatial join, index right is the polygon idx values
-    sjoin_gdf = gpd.sjoin(points_gpd, barrios_gpd)
-    sjoin_gdf.crs = 'epsg:4326'
+    
+    # sjoin_gdf = gpd.sjoin(points_gpd, barrios_gpd)
+    # sjoin_gdf.crs = 'epsg:4326'
 
-    # count the values with value counts
-    count_dict = sjoin_gdf['index_right'].value_counts().to_dict()
+    # # count the values with value counts
+    # count_dict = sjoin_gdf['index_right'].value_counts().to_dict()
 
 
-    # map the count_dict back to poly_gdf as new point count column 
-    # alternatively you could do a join here, but new col name is nice
-    barrios_gpd['point_count'] = barrios_gpd.index.map(count_dict)
+    # # map the count_dict back to poly_gdf as new point count column 
+    # # alternatively you could do a join here, but new col name is nice
+    # barrios_gpd[col] = barrios_gpd.index.map(count_dict)
 
-    #SE CREA LA COLUMNA QUE CUENTA EL NUMERO DE PUNTOS POR BARRIO SEGUN LA VARIABLE
-    barrios_gpd_points = barrios_gpd.groupby('nombre')[col].sum() 
+    # #SE CREA LA COLUMNA QUE CUENTA EL NUMERO DE PUNTOS POR BARRIO SEGUN LA VARIABLE
+    # barrios_gpd_points = barrios_gpd.groupby('nombre')[col].sum() 
 
     #SEGUN EL TIPO DE VARIABLE GENERAMOS OUTPUT GEOJSON
-    with open(f"barrios_per{col}.geojson", "w") as outfile:
-        outfile.write(barrios_gpd.to_json())
+    # with open(f"barrios_per{col}.geojson", "w") as outfile:
+    #     outfile.write(barrios_gpd.to_json())
 
-    return barrios_gpd_points
+    return barrios_gpd

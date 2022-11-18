@@ -2,6 +2,12 @@
 
 import os
 import modulos.intersecciones as varinter
+import json
+import geopandas as gpd
+
+
+# import rtree
+
 
 # Ensuring that we're running from the directory of main.py to correctly load the csv files
 abspath = os.path.abspath(__file__)
@@ -16,7 +22,21 @@ dir_datos_out = '../datos/datos_out/'
 
 # Al ser la primera llamada a la función interseccion_poligonos, pasamos el valor de el archivo barris-barrios.geojson
 
-barrios_updated = varinter.interseccion_poligonos(dir_datos_ini + 'barris-barrios.geojson', dir_datos_ini + 'zonas-verdes.geojson', 'area', '','%_zona_verde')
+#CARGAMOS LOS DATOS DE LOS BARRIOS
+with open(dir_datos_ini + 'barris-barrios.geojson') as json_file:
+    json_data = json.load(json_file)
+
+barrios_json = []
+for i in range(len(json_data['features'])):
+    barrios_json.append(json_data['features'][i])           #Guardamos resto de campos de geojson
+
+
+barrios_gpd = gpd.GeoDataFrame.from_features(barrios_json)
+barrios_gpd.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
+barrios_gpd = barrios_gpd.rename(columns ={'nombre':'nombre_barrio','codbarrio':'codigo_barrio'}) 
+
+
+barrios_updated = varinter.interseccion_poligonos(barrios_gpd, dir_datos_ini + 'zonas-verdes.geojson', 'area', '','%_zona_verde')
 
 
 # Cálculo distribución acústica por barrio
@@ -26,6 +46,9 @@ barrios_updated = varinter.interseccion_poligonos(dir_datos_ini + 'barris-barrio
 barrios_updated = varinter.interseccion_poligonos(barrios_updated, dir_datos_ini + 'lday_tota.json', 'count', 'gridcode','nivel_acustico')
 
 
+
+
+barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'hospitales.geojson','num_hospitales' )
 
 
 
