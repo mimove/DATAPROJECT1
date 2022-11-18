@@ -1,7 +1,14 @@
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 import pandas as pd
-  
+import os
+import json
+import geopandas as gpd
+
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
 # Initializing a GoogleAuth Object
 gauth = GoogleAuth()
   
