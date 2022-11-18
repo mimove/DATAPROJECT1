@@ -41,14 +41,19 @@ barrios_updated = varinter.interseccion_poligonos(barrios_gpd, dir_datos_ini + '
 
 # Cálculo distribución acústica por barrio
 
-# A partir del segundo valor calculado pasamos ya el geodataframe barrios_updated
 
 barrios_updated = varinter.interseccion_poligonos(barrios_updated, dir_datos_ini + 'lday_tota.json', 'count', 'gridcode','nivel_acustico')
 
 
-
+# Cálculo número de hospitales por barrio
 
 barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'hospitales.geojson','num_hospitales' )
+
+
+# Cálculo número de centros educativos por barrios
+
+barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'centros-educativos-en-valencia.geojson','num_colegios' )
+
 
 
 

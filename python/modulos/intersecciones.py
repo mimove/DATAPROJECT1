@@ -72,9 +72,7 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
     elif area_count == 'count':   
         
         merged = merged.rename(columns ={var_to_merge:new_column})
-        
-        print(merged[new_column])
-           
+                  
         var_merge = merged.groupby('nombre_barrio')[new_column].median()
 
         barrios_gpd = barrios_gpd.merge(var_merge, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla var_merge
