@@ -68,7 +68,11 @@ barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini +
 
  # Cálculo del numero de papeleras por barrio
 
-barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'papereres-papeleras.geojson', 'num_papeleras', 'points')
+barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'fgv-estacions-estaciones.geojson', 'num_estaciones', 'points')
+
+ #Cálculo de estaciones de transporte público por barrios
+
+barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'transporte-barrios.geojson', 'num_transporte', 'points')
  
 with open(dir_datos_out + "barrios_updated.geojson", "w") as outfile:  #Generamos archivo geojson con el porventaje de intersección de cada barrio
         outfile.write(barrios_updated.to_json())
