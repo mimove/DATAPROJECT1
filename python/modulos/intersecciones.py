@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import rtree
 from descartes import PolygonPatch
 
-def interseccion_poligonos(file1 : str, file2 : str):
+def interseccion_poligonos(file1 : str, file2 : str, area_count):
 
     ##########################################################
     ## FUNCION QUE CALCULA LA INTERSECCION DE LOS POLIGONOS ##
