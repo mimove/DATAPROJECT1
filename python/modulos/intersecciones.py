@@ -86,7 +86,7 @@ def interseccion_poligonos(file1 : str, file2 : str, area_count):
         outfile.write(barrios_gpd.to_json())
 
 
-def interseccion_puntos(file1 : str, file2 : str):
+def interseccion_puntos(file1 : str, file2 : str, col: str):
 
     #############################################################
     ## FUNCION QUE CALCULA EL NUMERO DE PUNTOS DE UNA VARIABLE ##
@@ -130,20 +130,20 @@ def interseccion_puntos(file1 : str, file2 : str):
 
     ## CALCULANDO INTERSECCIÓN BARRIOS CON PUNTOS DE COORDENADAS
 
-    merged = gpd.overlay(barrios_gpd, points_gpd,   how='intersection', keep_geom_type=False) # Calculamos la intersección de los polígonos de barrios con los de zonas verdes
+    merged = gpd.overlay(barrios_gpd, points_gpd,   how='intersection', keep_geom_type=False) # Calculamos la intersección de los polígonos de barrios con los puntos
     merged.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
 
 
     ## GUARDANDO RESULTADO EN ARCHIVO .geojson
-
-    with open("interseccion_colegios.geojson", "w") as outfile:
+                                              
+    with open(f"interseccion_{col}.geojson", "w") as outfile:
         outfile.write(merged.to_json())
-
 
     #CARGANDO DATOS CON GEOPANDAS PARA VER LA INTERSECCION
 
     # do the spatial join, index right is the polygon idx values
     sjoin_gdf = gpd.sjoin(points_gpd, barrios_gpd)
+    sjoin_gdf.crs = 'epsg:4326'
 
     # count the values with value counts
     count_dict = sjoin_gdf['index_right'].value_counts().to_dict()
@@ -153,9 +153,11 @@ def interseccion_puntos(file1 : str, file2 : str):
     # alternatively you could do a join here, but new col name is nice
     barrios_gpd['point_count'] = barrios_gpd.index.map(count_dict)
 
-    barrios_gpd_points = barrios_gpd.groupby('nombre')['point_count'].sum()
+    #SE CREA LA COLUMNA QUE CUENTA EL NUMERO DE PUNTOS POR BARRIO SEGUN LA VARIABLE
+    barrios_gpd_points = barrios_gpd.groupby('nombre')[col].sum() 
 
-    print(barrios_gpd_points)
-
-    with open("barrios_percolegios.geojson", "w") as outfile:
+    #SEGUN EL TIPO DE VARIABLE GENERAMOS OUTPUT GEOJSON
+    with open(f"barrios_per{col}.geojson", "w") as outfile:
         outfile.write(barrios_gpd.to_json())
+
+    return barrios_gpd_points
