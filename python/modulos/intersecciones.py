@@ -91,7 +91,7 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
     
 
 
-def interseccion_puntos(file1 : str, file2 : str, col: str):
+def interseccion_puntos(file1 : str, file2 : str, col: str, type : str):
 
     #############################################################
     ## FUNCION QUE CALCULA EL NUMERO DE PUNTOS DE UNA VARIABLE ##
@@ -124,11 +124,27 @@ def interseccion_puntos(file1 : str, file2 : str, col: str):
     merged = gpd.overlay(barrios_gpd, points_gpd,   how='intersection', keep_geom_type=False) # Calculamos la intersección de los polígonos de barrios con los puntos
     merged.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
 
-    
-    merged_points = merged.groupby('nombre_barrio')['codigo_barrio'].count().reset_index(name=col) # Sumamos todas las áreas de intersección por barrio
-        
-    barrios_gpd = barrios_gpd.merge(merged_points, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla merged_areas
+    if type == 'quality':
+        merged_quality = gpd.GeoDataFrame(merged['calidad_ambiental'])
+        barrios_gpd['calidad_ambiental'] = merged_quality # Hacemos merge de la tabla Barrios con la tabla merged_areas
+        barrios_gpd = barrios_gpd.merge(merged_quality, on='calidad_ambiental', how='left')
 
+    elif type == 'points': 
+        merged_points = merged.groupby('nombre_barrio')['codigo_barrio'].count().reset_index(name=col) # Sumamos todas las áreas de intersección por barrio
+
+        barrios_gpd = barrios_gpd.merge(merged_points, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla merged_areas
+    
+    #print(merged.loc[:,'calidad_ambiental'])
+
+
+
+    '''wbr.groupby(["weathersit"]).size()
+
+wbr.loc[(wbr["weathersit"]==1),"ws"]="Sunny"
+wbr.loc[(wbr["weathersit"]==2),"ws"]="Cloudy"
+wbr.loc[(wbr["weathersit"]==3),"ws"]="Rainy"
+
+wbr.groupby(["ws"]).size()'''
 
     ## GUARDANDO RESULTADO EN ARCHIVO .geojson
                                               
