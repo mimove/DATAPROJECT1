@@ -68,6 +68,10 @@ barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini +
 
  # Cálculo del numero de papeleras por barrio
 
+barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'papereres-papeleras.geojson', 'num_papeleras', 'points')
+
+# Calculo numero estaciones metro
+
 barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'fgv-estacions-estaciones.geojson', 'num_estaciones', 'points')
 
  #Cálculo de estaciones de transporte público por barrios
