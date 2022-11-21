@@ -7,6 +7,7 @@ import json
 import geopandas as gpd
 import numpy
 import psycopg2
+import random
 
 from psycopg2.extensions import register_adapter, AsIs
 
@@ -79,9 +80,17 @@ barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini +
 
 barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'carregadors-vehicles-electrics-cargadores-vehiculos-electricos.geojson','num_chargestations', 'points')
 
- # Cáculo número de estaciones de contaminación
+ # Cáculo del nivel de contaminación por barrio
 
 barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'estacions-contaminacio-atmosferiques-estaciones-contaminacion-atmosfericas.geojson', 'polution_stations', 'quality')
+
+random_quality = ['Desfavorable', 'Regular', 'Razonablemente buena', 'Buena'] # Declaramos los niveles que obtenemos de los datos
+
+for i in barrios_updated['calidad_ambiental']:
+    
+    barrios_updated['calidad_ambiental'] = random.choices(random_quality, k = len(barrios_updated['calidad_ambiental'])) # Generamos datos random para la calidad ambiental por cada barrio
+        
+print(barrios_updated['calidad_ambiental'])
 
  # Cálculo número de contenedores de residuos por barrio
 
@@ -98,7 +107,8 @@ barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini +
  #Cálculo de estaciones de transporte público por barrios
 
 barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'transporte-barrios.geojson', 'num_transporte', 'points')
- 
+
+
 with open(dir_datos_out + "barrios_updated.geojson", "w") as outfile:  #Generamos archivo geojson con el porventaje de intersección de cada barrio
         outfile.write(barrios_updated.to_json())
         
@@ -114,6 +124,7 @@ barrios_gpd = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
 dftosql.insert_data_sql('idealista', 'barrios', barrios_gpd, ['objectid','nombre_barrio','geometry'])
 
 # print(barrios_gpd['geometry'])
+
 
 
 
