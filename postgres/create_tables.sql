@@ -1,6 +1,6 @@
 -- TABLA BARRIOS
 
-create table barrios (
+create table if not exists barrios (
 id_barrio int,
 nombre varchar(50) not null,
 area float,
