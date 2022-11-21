@@ -117,6 +117,8 @@ barrios_gpd = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
 
 dftosql.insert_data_sql('idealista', 'barrios', barrios_gpd, ['objectid','nombre_barrio','gis_gis_barrios_area'])
 
+
+
 # try:
 #     connection = psycopg2.connect(user="postgres",
 #                                 password="Welcome01",
