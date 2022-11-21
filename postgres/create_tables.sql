@@ -1,25 +1,17 @@
 -- TABLA BARRIOS
 
-create table barrios (
+create table if not exists barrios (
     id_barrio int,
     nombre varchar(50) not null,
     area float,
     constraint pk_barrio primary key (id_barrio)
 );
 
--- TABLA RECOMENDACION
-
-create table recomendacion (
-    id_barrio int,
-    id_cliente int,
-    fecha datetime,
-    constraint fk_barrio foreign key(id_barrio) references barrios(id_barrio)
-);
 
 -- TABLA CLIENTES
 
-create table cliente(
-    id_cliente int primary key;
+create table if not exists clientes(
+    id_cliente int,
     punt_preg_1 float,
     punt_preg_2 float,
     punt_preg_3 float,
@@ -28,24 +20,41 @@ create table cliente(
     punt_preg_6 float,
     punt_preg_7 float,
     punt_preg_8 float,
-    constraint fk_cliente foreign key(id_cliente) references recomendacion(id_cliente)
+    constraint pk_cliente primary key (id_cliente)
 );
 
--- TABLA QUE RELACIONA LOS BARRIOS Y LAS CARACTERISTICAS
 
-create table barrio_caracteristica(
+
+-- TABLA RECOMENDACION
+
+create table if not exists recomendacion (
     id_barrio int,
-    id_caracteristica int,
-    puntuacion float,
-    fecha datetime,
-    constraint fk_barrio foreign key(id_barrio) references barrios(id_barrio)
+    id_cliente int,
+    fecha timestamp,
+    constraint pk_recomendacion primary key (id_barrio,id_cliente),
+    constraint fk_recomendacion_barrio foreign key (id_barrio) references barrios (id_barrio) ,
+    constraint fk_recomendacion_cliente foreign key (id_cliente) references clientes (id_cliente) 
 );
 
 -- TABLA DE CARACTERISTICAS
 
-create table caracteristica(
-    id_caracteristica int primary key,
+create table if not exists caracteristicas(
+    id_caracteristica int,
     nombre varchar,
     descripcion varchar (50),
-    constraint fk_caracteristica foreign key(id_caracteristica) references barrio_caracteristica(id_caracteristica)
+    constraint pk_caracteristica primary key (id_caracteristica)
 );
+
+
+-- TABLA QUE RELACIONA LOS BARRIOS Y LAS CARACTERISTICAS
+
+create table if not exists barrio_caracteristica(
+    id_barrio int,
+    id_caracteristica int,
+    puntuacion float,
+    fecha timestamp,
+    constraint pk_barrio_caracteristica primary key (id_barrio, id_caracteristica),
+    constraint fk_barrio_caract_barrios foreign key(id_barrio) references barrios (id_barrio),
+    constraint fk_barrio_caract_caracteristica foreign key(id_caracteristica) references caracteristicas (id_caracteristica)
+);
+
