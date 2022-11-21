@@ -13,13 +13,13 @@ create table recomendacion (
     id_barrio int,
     id_cliente int,
     fecha datetime,
-    primary key (id_barrio), foreign key (id_barrio)
+    constraint fk_barrio foreign key(id_barrio) references barrios(id_barrio)
 );
 
 -- TABLA CLIENTES
 
 create table cliente(
-    id_cliente int;
+    id_cliente int primary key;
     punt_preg_1 float,
     punt_preg_2 float,
     punt_preg_3 float,
@@ -28,7 +28,7 @@ create table cliente(
     punt_preg_6 float,
     punt_preg_7 float,
     punt_preg_8 float,
-    foreign key(id_cliente), primary key(id_cliente)
+    constraint fk_cliente foreign key(id_cliente) references recomendacion(id_cliente)
 );
 
 -- TABLA QUE RELACIONA LOS BARRIOS Y LAS CARACTERISTICAS
@@ -38,16 +38,16 @@ create table barrio_caracteristica(
     id_caracteristica int,
     puntuacion float,
     fecha datetime,
-    constraint pk_barrio, primary key(id_barrio)
+    constraint fk_barrio foreign key(id_barrio) references barrios(id_barrio)
 );
 
 -- TABLA DE CARACTERISTICAS
 
 create table caracteristica(
-    id_caracteristica int,
+    id_caracteristica int primary key,
     nombre varchar,
-    descripcion varchar,
-    primary key(nombre), foreign key(id_caracteristica)
+    descripcion varchar (50),
+    constraint fk_caracteristica foreign key(id_caracteristica) references barrio_caracteristica(id_caracteristica)
 );
 
 
