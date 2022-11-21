@@ -50,7 +50,11 @@ for i in range(len(json_data['features'])):
 
 barrios_gpd = gpd.GeoDataFrame.from_features(barrios_json)
 barrios_gpd.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
-barrios_gpd = barrios_gpd.rename(columns ={'nombre':'nombre_barrio','codbarrio':'codigo_barrio'}) 
+barrios_gpd = barrios_gpd.rename(columns ={'nombre':'nombre_barrio','objectid':'object_id_barrio'}) 
+
+
+
+# Cálculo distribución zonas verdes por barrio
 
 
 barrios_updated = varinter.interseccion_poligonos(barrios_gpd, dir_datos_ini + 'zonas-verdes.geojson', 'area', '','%_zona_verde')
@@ -103,9 +107,18 @@ with open(dir_datos_out + "barrios_updated.geojson", "w") as outfile:  #Generamo
 barrios_gpd = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
 
 
+
+
 # Inserting values of barrios into table
 
-dftosql.insert_data_sql('idealista', 'barrios', barrios_gpd, ['objectid','nombre_barrio','gis_gis_barrios_area'])
+dftosql.insert_data_sql('idealista', 'barrios', barrios_gpd, ['objectid','nombre_barrio','geometry'])
+
+# print(barrios_gpd['geometry'])
+
+
+
+
+
 
 
 # try:

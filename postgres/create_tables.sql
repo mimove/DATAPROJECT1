@@ -7,6 +7,16 @@ create table if not exists barrios (
     constraint pk_barrio primary key (id_barrio)
 );
 
+CREATE EXTENSION IF NOT EXISTS POSTGIS;
+CREATE EXTENSION IF NOT EXISTS POSTGIS_TOPOLOGY;
+
+ALTER TABLE barrios
+ALTER column area type  geometry(polygon,4326);
+
+
+ALTER TABLE barrios
+ADD zona_verde float;
+
 
 -- TABLA CLIENTES
 
@@ -39,12 +49,19 @@ create table if not exists recomendacion (
 -- TABLA DE CARACTERISTICAS
 
 create table if not exists caracteristicas(
-    id_caracteristica int,
-    nombre varchar,
+    id_caracteristica serial,
+    nombre varchar (50),
     descripcion varchar (50),
     constraint pk_caracteristica primary key (id_caracteristica)
 );
 
+alter table caracteristicas
+alter column descripcion type text;
+
+alter table caracteristicas
+alter column nombre type varchar (50);
+
+drop table caracteristicas;
 
 -- TABLA QUE RELACIONA LOS BARRIOS Y LAS CARACTERISTICAS
 
@@ -58,3 +75,7 @@ create table if not exists barrio_caracteristica(
     constraint fk_barrio_caract_caracteristica foreign key(id_caracteristica) references caracteristicas (id_caracteristica)
 );
 
+alter table barrio_caracteristica
+drop constraint  fk_barrio_caract_caracteristica;
+
+select * from barrios;
