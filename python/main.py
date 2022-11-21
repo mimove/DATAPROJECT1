@@ -103,7 +103,8 @@ barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini +
  #Cálculo de estaciones de transporte público por barrios
 
 barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'transporte-barrios.geojson', 'num_transporte', 'points')
- 
+
+
 with open(dir_datos_out + "barrios_updated.geojson", "w") as outfile:  #Generamos archivo geojson con el porventaje de intersección de cada barrio
         outfile.write(barrios_updated.to_json())
         
@@ -115,7 +116,6 @@ barrios_gpd = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
 # Inserting values of barrios into table
 
 dftosql.insert_data_sql('idealista', 'barrios', barrios_gpd, ['objectid','nombre_barrio','gis_gis_barrios_area'])
-
 
 # try:
 #     connection = psycopg2.connect(user="postgres",
