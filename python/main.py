@@ -7,6 +7,7 @@ import json
 import geopandas as gpd
 import numpy
 import psycopg2
+import pandas as pd
 
 from psycopg2.extensions import register_adapter, AsIs
 
@@ -105,6 +106,13 @@ barrios_gpd = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
 # Inserting values of barrios into table
 
 dftosql.insert_data_sql('idealista', 'barrios', barrios_gpd, ['objectid','nombre_barrio','gis_gis_barrios_area'])
+
+clientesdf = pd.read_excel('tmp_api\\responses.xls')
+
+df = clientesdf.rename(columns={'¿Qué edad tienes?': 'Edad', '¿Tienes hijos?': 'Hijos', '¿Trabajas actualmente?': 'Trabajo', '¿Valoras en gran medida la existencia de comercios cerca de tu zona?': 'Comercios', '¿Valoras en gran medida la existencia de estaciones de transporte público cerca de tu zona?': 'Transporte Publico', '¿Valoras en gran medida la existencia de lugares de ocio cerca de tu zona?': 'Ocio','¿Valoras en gran medida la existencia de colegios cerca de tu zona?': 'Colegios', '¿Valoras en gran medida la existencia de zonas verdes cerca de tu zona?': 'Zonas verdes', '¿Valoras en gran medida la existencia de centros sanitarios cerca de tu zona?': 'Centros Sanitarios', '¿Valoras negativamente la contaminación en tu zona?': 'Contaminacion', '¿El exceso de ruido supone un problema para ti?': 'Ruido', '¿Cuánto valoras la limpieza del barrio?': 'Limpieza','Ante la posibilidad de adquirir un coche electrico, ¿valoras la existencia de puntos de recarga?': 'Electrico', 'De las comodidades anteriores ¿cuáles serían las 3 que más valoras?': 'Comodidades', '¿Cuánto estarías dispuesto a pagar por el alquiler de una casa que ofrezca todas las comodidades que buscas?': 'Alquiler'})
+
+dftosql.insert_data_sql('idealista', 'clientes', clientesdf, ['id_cliente', 'Edad','Transporte Público','Colegios', 'Zonas Verdes', 'Centros Sanitarios', 'Contaminación', 'Ruido', 'Limpieza', 'Eléctrico'])
+
 
 
 # try:
