@@ -6,7 +6,7 @@
             "port": 5432,
             "driver": "PostgreSQL",
             "name": "DATAPROJECT1",
-            "database": "idealista",
+            "database": "test",
             "username": "postgres",
             "password": "Welcome01"
         }

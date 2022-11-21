@@ -49,6 +49,3 @@ create table caracteristica(
     descripcion varchar (50),
     constraint fk_caracteristica foreign key(id_caracteristica) references barrio_caracteristica(id_caracteristica)
 );
-
-
-
