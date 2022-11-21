@@ -58,107 +58,75 @@ barrios_gpd = barrios_gpd.rename(columns ={'nombre':'nombre_barrio','objectid':'
 # Cálculo distribución zonas verdes por barrio
 
 
-barrios_updated = varinter.interseccion_poligonos(barrios_gpd, dir_datos_ini + 'zonas-verdes.geojson', 'area', '','%_zona_verde')
+barrios_caracteristicas = varinter.interseccion_poligonos(barrios_gpd, dir_datos_ini + 'zonas-verdes.geojson', 'area', '','%_zona_verde', 3)
 
 
 # Cálculo distribución acústica por barrio
 
 
-barrios_updated = varinter.interseccion_poligonos(barrios_updated, dir_datos_ini + 'lday_tota.json', 'count', 'gridcode','nivel_acustico')
+barrios_caracteristicas = varinter.interseccion_poligonos(barrios_caracteristicas, dir_datos_ini + 'lday_tota.json', 'count', 'gridcode','nivel_acustico', 6)
 
 
 # Cálculo número de hospitales por barrio
 
-barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'hospitales.geojson','num_hospitales', 'points' )
+barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas,  dir_datos_ini + 'hospitales.geojson','num_hospitales', 'points', 4)
 
 
 # Cálculo número de centros educativos por barrios
 
-barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'centros-educativos-en-valencia.geojson','num_colegios', 'points')
+barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas,  dir_datos_ini + 'centros-educativos-en-valencia.geojson','num_colegios', 'points', 2)
 
  # Cálculo número de puntos de carga para coche eléctrico
 
-barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'carregadors-vehicles-electrics-cargadores-vehiculos-electricos.geojson','num_chargestations', 'points')
+barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas,  dir_datos_ini + 'carregadors-vehicles-electrics-cargadores-vehiculos-electricos.geojson','num_chargestations', 'points', 8)
 
  # Cáculo del nivel de contaminación por barrio
 
-barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'estacions-contaminacio-atmosferiques-estaciones-contaminacion-atmosfericas.geojson', 'polution_stations', 'quality')
+barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas,  dir_datos_ini + 'estacions-contaminacio-atmosferiques-estaciones-contaminacion-atmosfericas.geojson', 'polution_stations', 'quality', 5)
 
 random_quality = ['Desfavorable', 'Regular', 'Razonablemente buena', 'Buena'] # Declaramos los niveles que obtenemos de los datos
 
-for i in barrios_updated['calidad_ambiental']:
+# for i in barrios_caracteristicas['calidad_ambiental']:
     
-    barrios_updated['calidad_ambiental'] = random.choices(random_quality, k = len(barrios_updated['calidad_ambiental'])) # Generamos datos random para la calidad ambiental por cada barrio
+#     barrios_caracteristicas['calidad_ambiental'] = random.choices(random_quality, k = len(barrios_caracteristicas['calidad_ambiental'])) # Generamos datos random para la calidad ambiental por cada barrio
         
-print(barrios_updated['calidad_ambiental'])
+# print(barrios_caracteristicas['calidad_ambiental'])
 
  # Cálculo número de contenedores de residuos por barrio
 
-barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'contenidors-residus-solids-contenidores-residuos-solidos.geojson', 'num_contenedores', 'points')
-
- # Cálculo del numero de papeleras por barrio
-
-barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'papereres-papeleras.geojson', 'num_papeleras', 'points')
-
-# Calculo numero estaciones metro
-
-barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'fgv-estacions-estaciones.geojson', 'num_estaciones', 'points')
-
- #Cálculo de estaciones de transporte público por barrios
-
-barrios_updated = varinter.interseccion_puntos(barrios_updated,  dir_datos_ini + 'transporte-barrios.geojson', 'num_transporte', 'points')
+barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas,  dir_datos_ini + 'contenidors-residus-solids-contenidores-residuos-solidos.geojson', 'num_contenedores', 'points', 7)
 
 
-with open(dir_datos_out + "barrios_updated.geojson", "w") as outfile:  #Generamos archivo geojson con el porventaje de intersección de cada barrio
-        outfile.write(barrios_updated.to_json())
+#Cálculo de estaciones de transporte público por barrios
+
+barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas,  dir_datos_ini + 'transporte-barrios.geojson', 'num_transporte', 'points', 1)
+
+
+# with open(dir_datos_out + "barrios_caracteristicas.geojson", "w") as outfile:  #Generamos archivo geojson con el porventaje de intersección de cada barrio
+#         outfile.write(barrios_caracteristicas.to_json())
         
 
 # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
 barrios_gpd = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
 
 
+# Inserting values of caracteristicas into table
 
+# dftosql.create_caracteristicas_table('idealista')
 
 # Inserting values of barrios into table
 
-dftosql.insert_data_sql('idealista', 'barrios', barrios_gpd, ['objectid','nombre_barrio','geometry'])
+# dftosql.insert_data_sql('idealista', 'barrios', barrios_gpd, ['objectid','nombre_barrio','geometry'])
 
 # print(barrios_gpd['geometry'])
 
 
 
+print(barrios_caracteristicas['id_caract'])
 
 
 
 
-
-# try:
-#     connection = psycopg2.connect(user="postgres",
-#                                 password="Welcome01",
-#                                 host="localhost",
-#                                 port="5432",
-#                                 database="idealista")
-#     cursor = connection.cursor()
-#     print('Connection done')
-     
-#     count = 0
-#     for i in range(len(barrios_gpd)):
-        
-#         # print(barrios_gpd['nombre_barrio'][i])
-         
-#         postgres_insert_query = """ INSERT INTO barrios (id_barrio, nombre, area) VALUES (%s,%s,%s)"""
-#         record_to_insert = (barrios_gpd['objectid'][i], barrios_gpd['nombre_barrio'][i], barrios_gpd['gis_gis_barrios_area'][i])
-#         cursor.execute(postgres_insert_query, record_to_insert)
-
-#         connection.commit()
-#         count += cursor.rowcount
-        
-#     print(count, "Records inserted successfully into barrios table")
-    
-
-
-# except (Exception, psycopg2.Error) as error:
-#     print("Unable to connect", error)
 
 
         

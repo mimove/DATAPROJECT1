@@ -6,7 +6,7 @@ import rtree
 from descartes import PolygonPatch
 import random
 
-def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_to_merge:str, new_column: str):
+def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_to_merge:str, new_column: str, id_caract: int):
 
     ##########################################################
     ## FUNCION QUE CALCULA LA INTERSECCION DE LOS POLIGONOS ##
@@ -47,6 +47,7 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
     #     outfile.write(merged.to_json())
 
     #CARGA DE DATOS CON GPD PARA CALCULAR % DE INTERSECCION
+    
 
     
     if area_count == 'area':
@@ -70,6 +71,9 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
         
         barrios_gpd = barrios_gpd.drop(columns=['areaVariable','areaBarrio'])
         
+        
+        
+        
     elif area_count == 'count':   
         
         merged = merged.rename(columns ={var_to_merge:new_column})
@@ -79,8 +83,15 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
         barrios_gpd = barrios_gpd.merge(var_merge, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla var_merge
 
     
-
     
+    
+    value_id_caract = []
+    for i in barrios_gpd[new_column]:
+        value_id_caract.append(id_caract)
+      
+    barrios_gpd["id_caract"] = value_id_caract  
+    
+      
     
 
     #barrios_gpd_pervariable = barrios_gpd.groupby('nombre')['per_variable'].sum() #Sumamos todos los % de area por barrio
@@ -92,7 +103,7 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
     
 
 
-def interseccion_puntos(file1 : str, file2 : str, col: str, type : str):
+def interseccion_puntos(file1 : str, file2 : str, col: str, type : str, id_caract: int):
 
     #############################################################
     ## FUNCION QUE CALCULA EL NUMERO DE PUNTOS DE UNA VARIABLE ##
@@ -131,21 +142,23 @@ def interseccion_puntos(file1 : str, file2 : str, col: str, type : str):
         barrios_gpd = barrios_gpd.merge(merged_quality, on='calidad_ambiental', how='left')
 
     elif type == 'points': 
-        merged_points = merged.groupby('nombre_barrio')['codigo_barrio'].count().reset_index(name=col) # Sumamos todas las áreas de intersección por barrio
+        merged_points = merged.groupby('nombre_barrio')['object_id_barrio'].count().reset_index(name=col) # Sumamos todas las áreas de intersección por barrio
 
         barrios_gpd = barrios_gpd.merge(merged_points, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla merged_areas
+
+    
+  
+    
+    value_id_caract = []
+    for i in barrios_gpd[col]:
+        value_id_caract.append(id_caract)
+    
+    
+    barrios_gpd["id_caract"].append(value_id_caract)
+    
     
     #print(merged.loc[:,'calidad_ambiental'])
 
-
-
-    '''wbr.groupby(["weathersit"]).size()
-
-wbr.loc[(wbr["weathersit"]==1),"ws"]="Sunny"
-wbr.loc[(wbr["weathersit"]==2),"ws"]="Cloudy"
-wbr.loc[(wbr["weathersit"]==3),"ws"]="Rainy"
-
-wbr.groupby(["ws"]).size()'''
 
     ## GUARDANDO RESULTADO EN ARCHIVO .geojson
                                               

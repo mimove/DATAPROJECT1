@@ -56,12 +56,11 @@ def create_caracteristicas_table(db: str):
         ('Limpieza','Localizacion de contenedores y papeleras'),
         ('Puntos de recarga', 'Localizacion de puntos de recarga vehiculos eléctricos');
         """
-        
         cursor.execute(postgres_insert_query)
         
         connection.commit()
         
-        print('Connection done')
+        print('Table caracteristicas filled')
     
     except (Exception, psycopg2.Error) as error:
         print("Unable to connect", error)
