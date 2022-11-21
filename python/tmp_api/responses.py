@@ -44,10 +44,8 @@ cliente_df['Puntos de recarga'] = df['Puntos de recarga']
 
 
 
-print(cliente_df.iloc[:,1:].idxmax(axis='columns'))
+print(cliente_df.iloc[:, 0:].apply(lambda s: s.abs().nlargest(3).index.tolist(), axis=1))
+# df2 = cliente_df.assign(Top3 = preferencias)
+# print(cliente_df)
 
-
-
-#maxValues = cliente_df.max(axis = 1)
-#print(maxValues)
 
