@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 import rtree
 from descartes import PolygonPatch
+import random
 
 def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_to_merge:str, new_column: str):
 
