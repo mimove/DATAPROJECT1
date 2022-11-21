@@ -102,6 +102,7 @@ with open(dir_datos_out + "barrios_updated.geojson", "w") as outfile:  #Generamo
 # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
 barrios_gpd = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
 
+
 # Inserting values of barrios into table
 
 dftosql.insert_data_sql('idealista', 'barrios', barrios_gpd, ['objectid','nombre_barrio','gis_gis_barrios_area'])
