@@ -1,5 +1,8 @@
 -- TABLA BARRIOS
 
+CREATE EXTENSION IF NOT EXISTS POSTGIS;
+CREATE EXTENSION IF NOT EXISTS POSTGIS_TOPOLOGY;
+
 create table if not exists barrios (
     id_barrio int,
     nombre varchar(50) not null,
@@ -7,15 +10,14 @@ create table if not exists barrios (
     constraint pk_barrio primary key (id_barrio)
 );
 
-CREATE EXTENSION IF NOT EXISTS POSTGIS;
-CREATE EXTENSION IF NOT EXISTS POSTGIS_TOPOLOGY;
+
 
 ALTER TABLE barrios
 ALTER column area type  geometry(polygon,4326);
 
 
-ALTER TABLE barrios
-ADD zona_verde float;
+-- ALTER TABLE barrios
+-- ADD zona_verde float;
 
 
 -- TABLA CLIENTES
@@ -77,5 +79,10 @@ create table if not exists barrio_caracteristica(
 
 alter table barrio_caracteristica
 drop constraint  fk_barrio_caract_caracteristica;
+
+alter table barrio_caracteristica
+drop constraint  fk_barrio_caract_barrios;
+
+truncate table barrio_caracteristica;
 
 select * from barrios;

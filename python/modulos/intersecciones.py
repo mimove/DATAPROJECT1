@@ -35,7 +35,9 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
     
     file2_gpd = gpd.GeoDataFrame.from_features(file2_json)
     file2_gpd.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
-
+    
+    file2_gpd['id_caract'] = id_caract
+    
     #CALCULO DE LA INTERSECCION DE POLIGONOS
 
     merged = gpd.overlay(barrios_gpd, file2_gpd, how = 'intersection') # Calculamos la intersección de los polígonos de barrios con los de el segundo archivo que le pasamos como parametro
@@ -85,11 +87,9 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
     
     
     
-    value_id_caract = []
-    for i in barrios_gpd[new_column]:
-        value_id_caract.append(id_caract)
-      
-    barrios_gpd["id_caract"] = value_id_caract  
+    # barrios_gpd['object_id_barrio'] = barrios_in['object_id_barrio']
+    
+    barrios_gpd['id_caract_'+new_column] = id_caract
     
       
     
@@ -148,13 +148,9 @@ def interseccion_puntos(file1 : str, file2 : str, col: str, type : str, id_carac
 
     
   
+    # barrios_gpd['object_id_barrio'] = file1['object_id_barrio']
     
-    value_id_caract = []
-    for i in barrios_gpd[col]:
-        value_id_caract.append(id_caract)
-    
-    
-    barrios_gpd["id_caract"].append(value_id_caract)
+    barrios_gpd['id_caract_'+col] = id_caract
     
     
     #print(merged.loc[:,'calidad_ambiental'])
