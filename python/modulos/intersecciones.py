@@ -139,7 +139,7 @@ def interseccion_puntos(file1 : str, file2 : str, col: str, type : str, id_carac
     if type == 'quality':
         merged_quality = gpd.GeoDataFrame(merged['calidad_ambiental'])
         barrios_gpd['calidad_ambiental'] = merged_quality # Hacemos merge de la tabla Barrios con la tabla merged_areas
-        barrios_gpd = barrios_gpd.merge(merged_quality, on='calidad_ambiental', how='left')
+        # barrios_gpd = barrios_gpd.merge(merged_quality, on='calidad_ambiental', how='left')
 
     elif type == 'points': 
         merged_points = merged.groupby('nombre_barrio')['object_id_barrio'].count().reset_index(name=col) # Sumamos todas las áreas de intersección por barrio
