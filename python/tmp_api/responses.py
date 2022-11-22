@@ -42,10 +42,14 @@ cliente_df['Ruido'] = df['Ruido']
 cliente_df['Limpieza'] = df['Limpieza']
 cliente_df['Puntos de recarga'] = df['Puntos de recarga']
 
+top3 = cliente_df.iloc[:, 1:].apply(lambda s: s.abs().nlargest(3).index.tolist(), axis=1)
+
+recomendacion_df = pd.DataFrame()
+recomendacion_df['id_cliente'] = cliente_df['id_cliente']
+recomendacion_df = recomendacion_df.assign(Recomendacion=top3)
+recomendacion_df[['Recomendacion 1','Recomedacion 2', 'Recomendacion 3']] = pd.DataFrame(recomendacion_df.Recomendacion.tolist(), index= recomendacion_df.index)
 
 
-print(cliente_df.iloc[:, 0:].apply(lambda s: s.abs().nlargest(3).index.tolist(), axis=1))
-# df2 = cliente_df.assign(Top3 = preferencias)
-# print(cliente_df)
+print(recomendacion_df)
 
 
