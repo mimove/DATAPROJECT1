@@ -55,7 +55,7 @@ barrios_gpd = barrios_gpd.rename(columns ={'nombre':'nombre_barrio','objectid':'
 
 
 
-list_caract = ['%_zona_verde', 'nivel_acustico', 'num_hospitales', 'num_colegios', 'num_chargestations','calidad_ambiental','num_contenedores','num_transporte']
+list_caract = ['%_zona_verde', 'nivel_acustico', 'num_hospitales', 'num_colegios', 'num_chargestations','pm25','num_contenedores','num_transporte']
 
 # Cálculo distribución zonas verdes por barrio
 
@@ -84,13 +84,13 @@ barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas, 
 
 #  # Cáculo del nivel de contaminación por barrio
 
-barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas,  dir_datos_ini + 'estacions-contaminacio-atmosferiques-estaciones-contaminacion-atmosfericas.geojson', list_caract[5], 'quality', 5)
+barrios_caracteristicas = varinter.interpolacion_puntos(barrios_caracteristicas,  dir_datos_ini + 'estacions-contaminacio-atmosferiques-estaciones-contaminacion-atmosfericas.geojson', list_caract[5], 5)
 
-random_quality = ['Desfavorable', 'Regular', 'Razonablemente buena', 'Buena'] # Declaramos los niveles que obtenemos de los datos
+# random_quality = ['Desfavorable', 'Regular', 'Razonablemente buena', 'Buena'] # Declaramos los niveles que obtenemos de los datos
 
-for i in barrios_caracteristicas['calidad_ambiental']:
+# for i in barrios_caracteristicas['calidad_ambiental']:
     
-    barrios_caracteristicas['calidad_ambiental'] = random.choices(random_quality, k = len(barrios_caracteristicas['calidad_ambiental'])) # Generamos datos random para la calidad ambiental por cada barrio
+#     barrios_caracteristicas['calidad_ambiental'] = random.choices(random_quality, k = len(barrios_caracteristicas['calidad_ambiental'])) # Generamos datos random para la calidad ambiental por cada barrio
         
 # # print(barrios_caracteristicas['calidad_ambiental'])
 

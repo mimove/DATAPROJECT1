@@ -83,3 +83,5 @@ drop constraint  fk_barrio_caract_barrios;
 
 truncate table barrio_caracteristica; */
 
+
+truncate table barrio_caracteristica;

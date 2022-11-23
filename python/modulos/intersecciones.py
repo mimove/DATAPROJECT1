@@ -184,3 +184,54 @@ def interseccion_puntos(file1 : str, file2 : str, col: str, type : str, id_carac
     #     outfile.write(barrios_gpd.to_json())
 
     return barrios_gpd
+
+
+
+def interpolacion_puntos(file1 : str, file2 : str, col: str, id_caract: int):
+    
+    barrios_gpd = file1
+
+    #CARGAMOS DATOS INCIALES DE LOS PUNTOS
+    with open(file2) as json_file2:
+        json_data2 = json.load(json_file2)
+
+    points_json=[]
+
+    for i in range(len(json_data2['features'])):
+        if json_data2['features'][i]['geometry'] is None:  # Si los datos de geometry que encuentra son NULL pasa a la siguiente linea
+            pass
+        else:  
+            points_json.append(json_data2['features'][i])
+
+
+
+    #CARGAMOS LOS DATOS CON GEOPANDAS PARA CALCULAR LA INTERSECCION
+
+    points_gpd = gpd.GeoDataFrame.from_features(points_json)
+    points_gpd.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
+    
+    barrios_gpd = barrios_gpd.to_crs("+proj=cea +lat_ts=39.44628964870906 +lon_ts=-0.3326600366971329 +units=km") 
+    points_gpd = points_gpd.to_crs("+proj=cea +lat_ts=39.44628964870906 +lon_ts=-0.3326600366971329 +units=km") 
+
+
+    sjoin_gdf= gpd.sjoin_nearest(barrios_gpd,points_gpd, how="left")
+
+    #Se necesita convertir otra vez a epsg para poder tener las coordenadas GPS correctamente
+
+    # Quitamos valores duplicados del join
+    
+    sjoin_gdf = sjoin_gdf[~sjoin_gdf['nombre_barrio'].duplicated()]
+
+
+    # print(len(sjoin_gdf.index))
+
+    # barrios_gpd.index = merged_quality.index
+
+    barrios_gpd[col] = gpd.GeoDataFrame(sjoin_gdf[col])
+
+
+    barrios_gpd = barrios_gpd.to_crs ('epsg:4326')
+    
+    barrios_gpd['id_caract_'+col] = id_caract
+    
+    return barrios_gpd
