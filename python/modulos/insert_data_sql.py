@@ -3,17 +3,17 @@ def insert_data_sql(table: str, input_df:str, columns: list):
     import psycopg2
     from psycopg2 import sql
     
-    # username = os.environ['DB_USER']
-    # password = os.environ['DB_PASSWORD']
-    # hostname = os.environ['DB_HOST']
-    # port = os.environ['DB_PORT']
-    # db = os.environ['DB_NAME']
+    username = os.environ['DB_USER']
+    password = os.environ['DB_PASSWORD']
+    hostname = os.environ['DB_HOST']
+    port = os.environ['DB_PORT']
+    db = os.environ['DB_NAME']
     
-    username = 'postgres'
-    password = 'Welcome01'
-    hostname = 'localhost'
-    port = 5432
-    db = 'idealista'
+    # username = 'postgres'
+    # password = 'Welcome01'
+    # hostname = 'localhost'
+    # port = 5432
+    # db = 'idealista'
     
     
     try:
@@ -48,17 +48,17 @@ def create_caracteristicas_table():
     import psycopg2
     
     
-    # username = os.environ['DB_USER']
-    # password = os.environ['DB_PASSWORD']
-    # hostname = os.environ['DB_HOST']
-    # port = os.environ['DB_PORT']
-    # db = os.environ['DB_NAME']
+    username = os.environ['DB_USER']
+    password = os.environ['DB_PASSWORD']
+    hostname = os.environ['DB_HOST']
+    port = os.environ['DB_PORT']
+    db = os.environ['DB_NAME']
     
-    username = 'postgres'
-    password = 'Welcome01'
-    hostname = 'localhost'
-    port = 5432
-    db = 'idealista'
+    # username = 'postgres'
+    # password = 'Welcome01'
+    # hostname = 'localhost'
+    # port = 5432
+    # db = 'idealista'
     
     try:
         connection = psycopg2.connect(user=username,

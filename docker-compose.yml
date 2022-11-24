@@ -25,23 +25,23 @@ services:
     
     restart: unless-stopped
 
-  pgadmin:
-    container_name: pgadmin_container
-    image: dpage/pgadmin4:4.16
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+  # pgadmin:
+  #   container_name: pgadmin_container
+  #   image: dpage/pgadmin4:4.16
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+  #     PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
     
-    volumes:
-      - pgadmin:/root/.pgadmin
+  #   volumes:
+  #     - pgadmin:/root/.pgadmin
 
-    ports:
-      - "${PGADMIN_PORT:-5050}:80"
+  #   ports:
+  #     - "${PGADMIN_PORT:-5050}:80"
 
-    networks:
-      - postgres
+  #   networks:
+  #     - postgres
 
-    restart: unless-stopped
+  #   restart: unless-stopped
 
 
   python:

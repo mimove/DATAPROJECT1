@@ -3,26 +3,38 @@ def get_gform_clients():
     import pandas as pd
     from pydrive.auth import GoogleAuth
     from pydrive.drive import GoogleDrive
-    from oauth2client import client, file, tools
+    # from oauth2client import client, file, tools
     
     
-    '''# Initializing a GoogleAuth Object
-    gauth = GoogleAuth()
+    ### Automatic handle of credentials from https://stackoverflow.com/questions/24419188/automating-pydrive-verification-process
 
-    # client_secrets.json file is verified
-    # and it automatically handles authentication
-    gauth.LocalWebserverAuth()
+    # Initializing a GoogleAuth Object
+    gauth = GoogleAuth()
+    # Try to load saved client credentials
+    gauth.LoadCredentialsFile("./modulos/mycreds.txt")
+    if gauth.credentials is None:
+        # Authenticate if they're not there
+        gauth.LocalWebserverAuth()
+    elif gauth.access_token_expired:
+        # Refresh them if expired
+        gauth.Refresh()
+    else:
+        # Initialize the saved creds
+        gauth.Authorize()
+    # Save the current credentials to a file
+    gauth.SaveCredentialsFile("./modulos/mycreds.txt")
+    
     
     # GoogleDrive Instance is created using
     # authenticated GoogleAuth instance
     drive = GoogleDrive(gauth)
-
-    store = file.Storage('token.json')
-    creds = store.get()
+    
     # Initialize GoogleDriveFile instance with file id
     file_obj = drive.CreateFile({'id': '15zDrSsGwwX3Kj0oZCPhUPxr0WyRUl1vku6esoxJA7n4'})
-    file_obj.GetContentFile('responses.xls',
-            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')'''
+    file_obj.GetContentFile('./modulos/responses.xls',
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+
 
     df = pd.read_excel('./modulos/responses.xls')
 
