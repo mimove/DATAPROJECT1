@@ -104,8 +104,8 @@ barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas, 
 barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas,  dir_datos_ini + 'transporte-barrios.geojson', list_caract[7], 'points', 1)
 
         
-with open("barrios_caracteristicas_final.geojson", "w") as outfile:
-     outfile.write(barrios_caracteristicas.to_json())
+# with open("barrios_caracteristicas_final.geojson", "w") as outfile:
+#      outfile.write(barrios_caracteristicas.to_json())
 
 
 
