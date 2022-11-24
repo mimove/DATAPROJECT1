@@ -51,7 +51,7 @@ create table if not exists recomendacion (
 create table if not exists caracteristicas(
     id_caracteristica serial,
     nombre varchar (50),
-    descripcion text (50),
+    descripcion text,
     constraint pk_caracteristica primary key (id_caracteristica)
 );
 
@@ -84,4 +84,6 @@ drop constraint  fk_barrio_caract_barrios;
 truncate table barrio_caracteristica; */
 
 
-truncate table barrio_caracteristica;
+-- truncate table barrio_caracteristica;
+
+-- select * from barrios;

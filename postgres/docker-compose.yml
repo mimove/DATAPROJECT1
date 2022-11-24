@@ -3,7 +3,7 @@ version: '3.5'
 services:
   postgres:
     container_name: postgres_container
-    image: postgres:12.1
+    build: .
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Welcome01}
@@ -12,7 +12,7 @@ services:
     
     volumes:
       - postgres:/data/postgres
-      - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql    
+      # - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql    
     ports:
       - "5432:5432"
 
@@ -21,7 +21,7 @@ services:
       - postgres
       
     
-    restart: unless-stopped
+    # restart: unless-stopped
 
   pgadmin:
     container_name: pgadmin_container
@@ -39,7 +39,7 @@ services:
     networks:
       - postgres
 
-    restart: unless-stopped
+    # restart: unless-stopped
 
 networks:
   postgres:

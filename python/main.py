@@ -7,7 +7,7 @@ import json
 import geopandas as gpd
 import numpy
 import psycopg2
-import random
+
 
 from psycopg2.extensions import register_adapter, AsIs
 
@@ -109,16 +109,16 @@ barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas, 
         
 
 # # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
-# barrios_gpd = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
+barrios_gpd = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
 
 
 # Inserting values of caracteristicas into table
 
-# dftosql.create_caracteristicas_table('idealista')
+dftosql.create_caracteristicas_table()
 
 # Inserting values of barrios into table
 
-# dftosql.insert_data_sql('idealista', 'barrios', barrios_gpd, ['objectid','nombre_barrio','geometry'])
+dftosql.insert_data_sql('barrios', barrios_gpd, ['object_id_barrio','nombre_barrio','geometry'])
 
 # print(barrios_gpd['geometry'])
 
@@ -127,7 +127,7 @@ barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas, 
 barrios_caracteristicas = barrios_caracteristicas.fillna(psycopg2.extensions.AsIs('NULL'))
 
 for i in range(len(list_caract)):
-    dftosql.insert_data_sql('idealista', 'barrio_caracteristica', barrios_caracteristicas, ['object_id_barrio','id_caract_' + list_caract[i], list_caract[i]])
+    dftosql.insert_data_sql('barrio_caracteristica', barrios_caracteristicas, ['object_id_barrio','id_caract_' + list_caract[i], list_caract[i]])
     
 
 # print(barrios_caracteristicas['object_id_barrio'])

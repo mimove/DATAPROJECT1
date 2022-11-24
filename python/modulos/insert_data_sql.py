@@ -1,12 +1,26 @@
-def insert_data_sql(db:str, table: str, input_df:str, columns: list):
+def insert_data_sql(table: str, input_df:str, columns: list):
+    import os
     import psycopg2
     from psycopg2 import sql
     
+    username = os.environ['DB_USER']
+    password = os.environ['DB_PASSWORD']
+    hostname = os.environ['DB_HOST']
+    port = os.environ['DB_PORT']
+    db = os.environ['DB_NAME']
+    
+    # username = 'postgres'
+    # password = 'Welcome01'
+    # hostname = 'localhost'
+    # port = 5432
+    # db = 'idealista'
+    
+    
     try:
-        connection = psycopg2.connect(user="postgres",
-                                    password="Welcome01",
-                                    host="localhost",
-                                    port="5432",
+        connection = psycopg2.connect(user=username,
+                                    password=password,
+                                    host=hostname,
+                                    port=port,
                                     database=db)
         cursor = connection.cursor()
         print('Connection done')
@@ -35,15 +49,28 @@ def insert_data_sql(db:str, table: str, input_df:str, columns: list):
         
         
 
-def create_caracteristicas_table(db: str):
+def create_caracteristicas_table():
+    import os
     import psycopg2
     
     
+    username = os.environ['DB_USER']
+    password = os.environ['DB_PASSWORD']
+    hostname = os.environ['DB_HOST']
+    port = os.environ['DB_PORT']
+    db = os.environ['DB_NAME']
+    
+    # username = 'postgres'
+    # password = 'Welcome01'
+    # hostname = 'localhost'
+    # port = 5432
+    # db = 'idealista'
+    
     try:
-        connection = psycopg2.connect(user="postgres",
-                                    password="Welcome01",
-                                    host="localhost",
-                                    port="5432",
+        connection = psycopg2.connect(user=username,
+                                    password=password,
+                                    host=hostname,
+                                    port=port,
                                     database=db)
         cursor = connection.cursor()
         postgres_insert_query = """ INSERT INTO caracteristicas (NOMBRE, DESCRIPCION) VALUES
@@ -63,4 +90,4 @@ def create_caracteristicas_table(db: str):
         print('Table caracteristicas filled')
     
     except (Exception, psycopg2.Error) as error:
-        print("Unable to connect", error)
+        print("Unable to connec", error)
