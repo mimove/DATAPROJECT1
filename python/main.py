@@ -104,61 +104,64 @@ barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas, 
 barrios_caracteristicas = varinter.interseccion_puntos(barrios_caracteristicas,  dir_datos_ini + 'transporte-barrios.geojson', list_caract[7], 'points', 1)
 
         
-
-
-## CARGA TABLA CARACTERÍSTICAS EN POSTGRES
-
-# Inserting values of caracteristicas into table
-
-dftosql.create_caracteristicas_table()
-
-
-## CARGA TABLA BARRIOS EN POSTGRES
-
-# Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
-
-barrios_gpd = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
-
-# Inserting values of barrios into table
-
-dftosql.insert_data_sql('barrios', barrios_gpd, ['object_id_barrio','nombre_barrio','geometry'])
+with open("barrios_caracteristicas_final.geojson", "w") as outfile:
+     outfile.write(barrios_caracteristicas.to_json())
 
 
 
-## CARGA TABLA BARRIO-CARACTERÍSTICA EN POSTGRES
+# ## CARGA TABLA CARACTERÍSTICAS EN POSTGRES
 
-# Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
+# # Inserting values of caracteristicas into table
 
-barrios_caracteristicas = barrios_caracteristicas.fillna(psycopg2.extensions.AsIs('NULL'))
+# dftosql.create_caracteristicas_table()
 
-for i in range(len(list_caract)):
+
+# ## CARGA TABLA BARRIOS EN POSTGRES
+
+# # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
+
+# barrios_gpd = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
+
+# # Inserting values of barrios into table
+
+# dftosql.insert_data_sql('barrios', barrios_gpd, ['object_id_barrio','nombre_barrio','geometry'])
+
+
+
+# ## CARGA TABLA BARRIO-CARACTERÍSTICA EN POSTGRES
+
+# # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
+
+# barrios_caracteristicas = barrios_caracteristicas.fillna(psycopg2.extensions.AsIs('NULL'))
+
+# for i in range(len(list_caract)):
     
-    # Inserting values of barrios-caracteristicas into table
+#     # Inserting values of barrios-caracteristicas into table
     
-    dftosql.insert_data_sql('barrio_caracteristica', barrios_caracteristicas, ['object_id_barrio','id_caract_' + list_caract[i], list_caract[i]])
+#     dftosql.insert_data_sql('barrio_caracteristica', barrios_caracteristicas, ['object_id_barrio','id_caract_' + list_caract[i], list_caract[i]])
     
 
 
 
 
-## CARGA TABLA CLIENTES EN POSTGRES
+# ## CARGA TABLA CLIENTES EN POSTGRES
 
 
 
 
-clientes = getform.get_gform_clients()
+# clientes = getform.get_gform_clients()
 
-# Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
+# # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
 
-clientes = clientes.fillna(psycopg2.extensions.AsIs('NULL'))
+# clientes = clientes.fillna(psycopg2.extensions.AsIs('NULL'))
 
-# Inserting values of clientes into table
+# # Inserting values of clientes into table
 
-dftosql.insert_data_sql('clientes', clientes, ['id_cliente','Transporte Publico',
-                                               'Colegios','Zonas verdes',
-                                               'Centros Sanitarios',
-                                               'Contaminacion','Ruido',
-                                               'Limpieza','Puntos de recarga'])
+# dftosql.insert_data_sql('clientes', clientes, ['id_cliente','Transporte Publico',
+#                                                'Colegios','Zonas verdes',
+#                                                'Centros Sanitarios',
+#                                                'Contaminacion','Ruido',
+#                                                'Limpieza','Puntos de recarga'])
 
-# print(clientes)
+
 

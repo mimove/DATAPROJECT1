@@ -22,29 +22,19 @@ ALTER column area type  geometry(polygon,4326); */
 
 create table if not exists clientes(
     id_cliente int,
-    punt_preg_1 float,
-    punt_preg_2 float,
-    punt_preg_3 float,
-    punt_preg_4 float,
-    punt_preg_5 float,
-    punt_preg_6 float,
-    punt_preg_7 float,
-    punt_preg_8 float,
+    punt_transporte float,
+    punt_colegios float,
+    punt_zonas_verdes float,
+    punt_hospitales float,
+    punt_pm25 float,
+    punt_ruido float,
+    punt_limpieza float,
+    punt_puntos_recarga float,
     constraint pk_cliente primary key (id_cliente)
 );
 
 
 
--- TABLA RECOMENDACION
-
-create table if not exists recomendacion (
-    id_barrio int,
-    id_cliente int,
-    fecha timestamp,
-    constraint pk_recomendacion primary key (id_barrio,id_cliente),
-    constraint fk_recomendacion_barrio foreign key (id_barrio) references barrios (id_barrio) ,
-    constraint fk_recomendacion_cliente foreign key (id_cliente) references clientes (id_cliente) 
-);
 
 -- TABLA DE CARACTERISTICAS
 
@@ -55,13 +45,21 @@ create table if not exists caracteristicas(
     constraint pk_caracteristica primary key (id_caracteristica)
 );
 
-/* alter table caracteristicas
-alter column descripcion type text; */
 
-/* alter table caracteristicas
-alter column nombre type varchar (50); */
 
-/* drop table caracteristicas; */
+-- TABLA RECOMENDACION (RELACIONA CARACTERISTICAS CON BARRIOS Y CLIENTES SEGÚN SUS PREFERENCIAS)
+
+create table if not exists recomendacion (
+    id_barrio int,
+    id_cliente int,
+    id_caracteristica int,
+    fecha timestamp,
+    constraint pk_recomendacion primary key (id_barrio,id_cliente),
+    constraint fk_recomendacion_barrio foreign key (id_barrio) references barrios (id_barrio) ,
+    constraint fk_recomendacion_cliente foreign key (id_cliente) references clientes (id_cliente),
+    constraint fk_recomendacion_caracteristica foreign key (id_caracteristica) references caracteristicas (id_caracteristica)
+);
+
 
 -- TABLA QUE RELACIONA LOS BARRIOS Y LAS CARACTERISTICAS
 
@@ -75,15 +73,4 @@ create table if not exists barrio_caracteristica(
     constraint fk_barrio_caract_caracteristica foreign key(id_caracteristica) references caracteristicas (id_caracteristica)
 );
 
-/* alter table barrio_caracteristica
-drop constraint  fk_barrio_caract_caracteristica;
 
-alter table barrio_caracteristica
-drop constraint  fk_barrio_caract_barrios;
-
-truncate table barrio_caracteristica; */
-
-
--- truncate table barrio_caracteristica;
-
--- select * from barrios;
