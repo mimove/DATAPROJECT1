@@ -3,17 +3,17 @@ def insert_data_sql(table: str, input_df:str, columns: list):
     import psycopg2
     from psycopg2 import sql
     
-    username = os.environ['DB_USER']
-    password = os.environ['DB_PASSWORD']
-    hostname = os.environ['DB_HOST']
-    port = os.environ['DB_PORT']
-    db = os.environ['DB_NAME']
+    # username = os.environ['DB_USER']
+    # password = os.environ['DB_PASSWORD']
+    # hostname = os.environ['DB_HOST']
+    # port = os.environ['DB_PORT']
+    # db = os.environ['DB_NAME']
     
-    # username = 'postgres'
-    # password = 'Welcome01'
-    # hostname = 'localhost'
-    # port = 5432
-    # db = 'idealista'
+    username = 'postgres'
+    password = 'Welcome01'
+    hostname = 'localhost'
+    port = 5432
+    db = 'idealista'
     
     
     try:
@@ -29,12 +29,6 @@ def insert_data_sql(table: str, input_df:str, columns: list):
         count = 0
         for i in range(len(input_df)):
             
-            # print(barrios_gpd['nombre_barrio'][i])
-            
-            # postgres_insert_query = """ INSERT INTO barrios (id_barrio, nombre, area) VALUES (%s,%s,%s)"""
-            # record_to_insert = (input_df['objectid'][i], input_df['nombre_barrio'][i], input_df['gis_gis_barrios_area'][i])
-            # cursor.execute(postgres_insert_query, record_to_insert)
-
             insertion_query = sql.SQL("INSERT INTO " + table + " VALUES ({})").format(sql.SQL(', ').join(sql.Placeholder()*len(columns)))
             cursor.execute(insertion_query, [str(input_df[columns[j]][i]) if 'POLYGON' in str(input_df[columns[j]][i]) else input_df[columns[j]][i]  for j in range(len(columns))])
                 
@@ -42,7 +36,7 @@ def insert_data_sql(table: str, input_df:str, columns: list):
             connection.commit()
             count += cursor.rowcount
         
-        print(count, "Records inserted successfully into barrios table") 
+        print(count, "Records inserted successfully into " + table + " table") 
         
     except (Exception, psycopg2.Error) as error:
         print("Unable to connect", error)
@@ -54,17 +48,17 @@ def create_caracteristicas_table():
     import psycopg2
     
     
-    username = os.environ['DB_USER']
-    password = os.environ['DB_PASSWORD']
-    hostname = os.environ['DB_HOST']
-    port = os.environ['DB_PORT']
-    db = os.environ['DB_NAME']
+    # username = os.environ['DB_USER']
+    # password = os.environ['DB_PASSWORD']
+    # hostname = os.environ['DB_HOST']
+    # port = os.environ['DB_PORT']
+    # db = os.environ['DB_NAME']
     
-    # username = 'postgres'
-    # password = 'Welcome01'
-    # hostname = 'localhost'
-    # port = 5432
-    # db = 'idealista'
+    username = 'postgres'
+    password = 'Welcome01'
+    hostname = 'localhost'
+    port = 5432
+    db = 'idealista'
     
     try:
         connection = psycopg2.connect(user=username,
