@@ -54,7 +54,7 @@ create table if not exists recomendacion (
     id_cliente int,
     id_caracteristica int,
     fecha timestamp,
-    constraint pk_recomendacion primary key (id_barrio,id_cliente),
+    constraint pk_recomendacion primary key (id_barrio,id_cliente,id_caracteristica),
     constraint fk_recomendacion_barrio foreign key (id_barrio) references barrios (id_barrio) ,
     constraint fk_recomendacion_cliente foreign key (id_cliente) references clientes (id_cliente),
     constraint fk_recomendacion_caracteristica foreign key (id_caracteristica) references caracteristicas (id_caracteristica)

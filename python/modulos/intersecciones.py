@@ -1,10 +1,12 @@
 import json
 import geopandas as gpd
 import matplotlib.pyplot as plt 
-
+import pandas as pd
 import rtree
 from descartes import PolygonPatch
 import random
+import datetime
+
 
 def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_to_merge:str, new_column: str, id_caract: int):
 
@@ -90,6 +92,9 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
     # barrios_gpd['object_id_barrio'] = barrios_in['object_id_barrio']
     
     barrios_gpd['id_caract_'+new_column] = id_caract
+      
+    
+    barrios_gpd['date_time'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
     
       
     
@@ -152,6 +157,7 @@ def interseccion_puntos(file1 : str, file2 : str, col: str, type : str, id_carac
     
     barrios_gpd['id_caract_'+col] = id_caract
     
+    barrios_gpd['date_time'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
     
     #print(merged.loc[:,'calidad_ambiental'])
 
@@ -234,4 +240,28 @@ def interpolacion_puntos(file1 : str, file2 : str, col: str, id_caract: int):
     
     barrios_gpd['id_caract_'+col] = id_caract
     
+    barrios_gpd['date_time'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
+    
     return barrios_gpd
+
+
+
+
+def inters_preferencias_barrios(file1, file2, list_caract,nbarrios):
+    
+    barrios_top = pd.DataFrame(columns=['object_id_barrio', 'id_caract', 'val_carac','date_time'])
+
+    for i in range(len(list_caract)):
+        data = file1[['object_id_barrio','id_caract_'+list_caract[i], list_caract[i],'date_time']].sort_values([list_caract[i]], axis = 0, ascending = False).head(nbarrios).values.tolist()
+        barrios_top = pd.concat([barrios_top,pd.DataFrame(data, columns=barrios_top.columns)],ignore_index=True)
+    
+    
+    file2 = pd.merge(file2, barrios_top, how="left", on=['id_caract'])
+        
+          
+    # file2['object_id_barrio'] = left_merged['object_id_barrio']
+    # file2['date_time'] = left_merged['date_time']
+    
+    
+    return file2
