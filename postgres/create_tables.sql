@@ -74,3 +74,21 @@ create table if not exists barrio_caracteristica(
 );
 
 
+
+
+-- TABLA CASAS
+create table if not exists casas(
+id_casa int,
+ubicacion geometry(point,4326),
+precio float,
+id_barrio int,
+constraint pk_casas primary key(id_casa),
+constraint fk_casas_barrios foreign key(id_barrio) references barrios (id_barrio)
+);
+
+
+
+
+
+
+

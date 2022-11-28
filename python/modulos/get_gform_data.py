@@ -1,6 +1,7 @@
 def get_gform_clients(api_form,list_caract,nprefs):
     
     import pandas as pd
+    import time
     from pydrive.auth import GoogleAuth
     from pydrive.drive import GoogleDrive
     # from oauth2client import client, file, tools
@@ -31,9 +32,16 @@ def get_gform_clients(api_form,list_caract,nprefs):
     
     # Initialize GoogleDriveFile instance with file id
     file_obj = drive.CreateFile({'id': '15zDrSsGwwX3Kj0oZCPhUPxr0WyRUl1vku6esoxJA7n4'})
-    file_obj.GetContentFile(api_form,
-            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
+    while True:
+        try: 
+            file_obj.GetContentFile(api_form,
+                    mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            
+            break
+        except:
+            print('Trying to connect')
+            time.sleep(2)
 
 
     df = pd.read_excel(api_form)

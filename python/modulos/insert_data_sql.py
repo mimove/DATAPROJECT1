@@ -3,17 +3,17 @@ def insert_data_sql(table: str, input_df:str, columns: list):
     import psycopg2
     from psycopg2 import sql
     
-    # username = os.environ['DB_USER']
-    # password = os.environ['DB_PASSWORD']
-    # hostname = os.environ['DB_HOST']
-    # port = os.environ['DB_PORT']
-    # db = os.environ['DB_NAME']
+    username = os.environ['DB_USER']
+    password = os.environ['DB_PASSWORD']
+    hostname = os.environ['DB_HOST']
+    port = os.environ['DB_PORT']
+    db = os.environ['DB_NAME']
     
-    username = 'postgres'
-    password = 'Welcome01'
-    hostname = 'localhost'
-    port = 5432
-    db = 'idealista'
+    # username = 'postgres'
+    # password = 'Welcome01'
+    # hostname = 'localhost'
+    # port = 5432
+    # db = 'idealista'
     
     
     try:
@@ -28,11 +28,15 @@ def insert_data_sql(table: str, input_df:str, columns: list):
         
         count = 0
         for i in range(len(input_df)):
-            
+            # print(i)
             insertion_query = sql.SQL("INSERT INTO " + table + " VALUES ({})").format(sql.SQL(', ').join(sql.Placeholder()*len(columns)))
             # print([str(input_df[columns[j]][i]) if 'POLYGON' in str(input_df[columns[j]][i]) else input_df[columns[j]][i]  for j in range(len(columns))])    
-            cursor.execute(insertion_query, [str(input_df[columns[j]][i]) if 'POLYGON' in str(input_df[columns[j]][i]) else input_df[columns[j]][i]  for j in range(len(columns))])
+            # print([str(input_df[columns[j]][i]) if 'POINT' in str(input_df[columns[j]][i]) else input_df[columns[j]][i] for j in range(len(columns))])
+            # cursor.execute(insertion_query, [str(input_df[columns[j]][i]) if 'POINT' in str(input_df[columns[j]][i]) else input_df[columns[j]][i] for j in range(len(columns))])
 
+            cursor.execute(insertion_query, [str(input_df[columns[j]][i]) if any(c in str(input_df[columns[j]][i]) for c in ('POLYGON','POINT')) else input_df[columns[j]][i] for j in range(len(columns))])
+
+            # print('Here')
             connection.commit()
             count += cursor.rowcount
         
@@ -48,17 +52,17 @@ def create_caracteristicas_table():
     import psycopg2
     
     
-    # username = os.environ['DB_USER']
-    # password = os.environ['DB_PASSWORD']
-    # hostname = os.environ['DB_HOST']
-    # port = os.environ['DB_PORT']
-    # db = os.environ['DB_NAME']
+    username = os.environ['DB_USER']
+    password = os.environ['DB_PASSWORD']
+    hostname = os.environ['DB_HOST']
+    port = os.environ['DB_PORT']
+    db = os.environ['DB_NAME']
     
-    username = 'postgres'
-    password = 'Welcome01'
-    hostname = 'localhost'
-    port = 5432
-    db = 'idealista'
+    # username = 'postgres'
+    # password = 'Welcome01'
+    # hostname = 'localhost'
+    # port = 5432
+    # db = 'idealista'
     
     try:
         connection = psycopg2.connect(user=username,

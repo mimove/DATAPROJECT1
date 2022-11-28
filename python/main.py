@@ -4,6 +4,7 @@ import os
 import modulos.intersecciones as varinter
 import modulos.insert_data_sql as dftosql
 import modulos.get_gform_data as getform
+import modulos.house_generator as housegen
 import json
 import geopandas as gpd
 import numpy
@@ -145,118 +146,144 @@ recomendacion_cliente = varinter.inters_preferencias_barrios(barrios_caracterist
 
 
 
-
-
-# #######################################################
-
-# # ## CARGA TABLA CARACTERÍSTICAS EN POSTGRES
-
-# # # Inserting values of caracteristicas into table
-
-# dftosql.create_caracteristicas_table()
-
-
-# ## CARGA TABLA BARRIOS EN POSTGRES
-
-# # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
-
-# barrios_gpd_table = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
-
-# # Inserting values of barrios into table
-
-# dftosql.insert_data_sql('barrios', barrios_gpd_table, ['object_id_barrio','nombre_barrio','geometry'])
+casas_df = housegen.house_generator(1000,barrios_gpd)
 
 
 
 
-# ## CARGA TABLA BARRIO-CARACTERÍSTICA EN POSTGRES
 
-# # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
 
-# barrios_caracteristicas_table = barrios_caracteristicas.fillna(psycopg2.extensions.AsIs('NULL'))
 
-# for i in range(len(list_caract)):
+#######################################################
+
+# ## CARGA TABLA CARACTERÍSTICAS EN POSTGRES
+
+# # Inserting values of caracteristicas into table
+
+dftosql.create_caracteristicas_table()
+
+
+## CARGA TABLA BARRIOS EN POSTGRES
+
+# Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
+
+barrios_gpd_table = barrios_gpd.fillna(psycopg2.extensions.AsIs('NULL'))
+
+# Inserting values of barrios into table
+
+dftosql.insert_data_sql('barrios', barrios_gpd_table, ['object_id_barrio','nombre_barrio','geometry'])
+
+
+
+
+## CARGA TABLA BARRIO-CARACTERÍSTICA EN POSTGRES
+
+# Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
+
+barrios_caracteristicas_table = barrios_caracteristicas.fillna(psycopg2.extensions.AsIs('NULL'))
+
+for i in range(len(list_caract)):
     
-#     # Inserting values of barrios-caracteristicas into table
+    # Inserting values of barrios-caracteristicas into table
     
-#     dftosql.insert_data_sql('barrio_caracteristica', barrios_caracteristicas_table, ['object_id_barrio','id_caract_' + list_caract[i], list_caract[i]])
+    dftosql.insert_data_sql('barrio_caracteristica', barrios_caracteristicas_table, ['object_id_barrio','id_caract_' + list_caract[i], list_caract[i]])
     
     
 
-# ## CARGA INICIAL TABLA CLIENTES EN POSTGRES
+## CARGA INICIAL TABLA CLIENTES EN POSTGRES
 
 
-# ## Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
+## Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
 
-# clientes_table = clientes.fillna(psycopg2.extensions.AsIs('NULL'))
+clientes_table = clientes.fillna(psycopg2.extensions.AsIs('NULL'))
 
-# # Inserting values of clientes into table
+# Inserting values of clientes into table
 
-# dftosql.insert_data_sql('clientes', clientes_table, ['id_cliente',*[i for i in list_caract]])
+dftosql.insert_data_sql('clientes', clientes_table, ['id_cliente',*[i for i in list_caract]])
  
  
 
 # ## CARGA INICIAL TABLA RECOMENDACION EN POSTGRES
 
 
-######################################################
-# COMPROBACIÓN DINÁMICA DEL GOOGLE FORM A TRAVÉS DE LA API PARA VER SI HAY CLIENTES NUEVOS
+# # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
+
+recomendacion_cliente_table = recomendacion_cliente.fillna(psycopg2.extensions.AsIs('NULL'))
+
+# Inserting values of recomendacion_clientes into table
+
+# print(barrios_caracteristicas['date_time'])
+
+# print(recomendacion_cliente['date_time'])
+
+dftosql.insert_data_sql('recomendacion', recomendacion_cliente_table, ['object_id_barrio','id_cliente','id_caract','date_time'])
 
 
-while True:
+# # ## CARGA INICIAL TABLA CASAS EN POSTGRES
 
-    clientes_new, preferencia_clientes_new = getform.get_gform_clients('./modulos/responses.xls',list_caract,nprefs)
+casas_df_table = casas_df.fillna(psycopg2.extensions.AsIs('NULL'))
 
-    if len(clientes_new) == len(clientes):
-        print('Ningún registro que actualizar')
-        time.sleep(20)
-        continue
-    else:
+dftosql.insert_data_sql('casas', casas_df_table, ['id_casa','geometry','price','object_id_barrio'])
 
-        # Obteniendo pandas con datos para tabla recomendacion
-        recomendacion_cliente_new = varinter.inters_preferencias_barrios(barrios_caracteristicas, preferencia_clientes_new, list_caract,nbarrios)
+
+# ######################################################
+# # COMPROBACIÓN DINÁMICA DEL GOOGLE FORM A TRAVÉS DE LA API PARA VER SI HAY CLIENTES NUEVOS
+
+
+# while True:
+
+#     clientes_new, preferencia_clientes_new = getform.get_gform_clients('./modulos/responses.xls',list_caract,nprefs)
+
+#     if len(clientes_new) == len(clientes):
+#         print('Ningún registro que actualizar')
+#         time.sleep(20)
+#         continue
+#     else:
+
+#         # Obteniendo pandas con datos para tabla recomendacion
+#         recomendacion_cliente_new = varinter.inters_preferencias_barrios(barrios_caracteristicas, preferencia_clientes_new, list_caract,nbarrios)
 
         
 
-        for i in range(len(clientes_new)-len(clientes)):
+#         for i in range(len(clientes_new)-len(clientes)):
 
-            clientes_new_sql = pd.DataFrame(columns=clientes_new.columns)
-            data = clientes_new.loc[[len(clientes)+i]].values.tolist()
-            clientes_new_sql = pd.concat([clientes_new_sql, pd.DataFrame(data,columns=clientes_new_sql.columns)],ignore_index=False)
+#             clientes_new_sql = pd.DataFrame(columns=clientes_new.columns)
+#             data = clientes_new.loc[[len(clientes)+i]].values.tolist()
+#             clientes_new_sql = pd.concat([clientes_new_sql, pd.DataFrame(data,columns=clientes_new_sql.columns)],ignore_index=False)
 
-            # INTRODUCCION NUEVOS CLIENTES TABLA CLIENTES EN POSTGRES
+#             # INTRODUCCION NUEVOS CLIENTES TABLA CLIENTES EN POSTGRES
 
-            # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
+#             # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
 
-            clientes_new_sql_table = clientes_new_sql.fillna(psycopg2.extensions.AsIs('NULL'))
+#             clientes_new_sql_table = clientes_new_sql.fillna(psycopg2.extensions.AsIs('NULL'))
 
-            #     # Inserting values of clientes into table
+#             #     # Inserting values of clientes into table
 
-            dftosql.insert_data_sql('clientes', clientes_new_sql_table, ['id_cliente',*[i for i in list_caract]])
+#             dftosql.insert_data_sql('clientes', clientes_new_sql_table, ['id_cliente',*[i for i in list_caract]])
         
 
 
-        for i in range(len(recomendacion_cliente_new)-len(recomendacion_cliente)):
-            ## CARGA INICIAL TABLA RECOMENDACION EN POSTGRES
-            recomendacion_cliente_new_sql = pd.DataFrame(columns=recomendacion_cliente_new.columns)
-            data = recomendacion_cliente_new.loc[[len(recomendacion_cliente)+i]].values.tolist()
+#         for i in range(len(recomendacion_cliente_new)-len(recomendacion_cliente)):
+#             ## CARGA INICIAL TABLA RECOMENDACION EN POSTGRES
+#             recomendacion_cliente_new_sql = pd.DataFrame(columns=recomendacion_cliente_new.columns)
+#             data = recomendacion_cliente_new.loc[[len(recomendacion_cliente)+i]].values.tolist()
 
-            recomendacion_cliente_new_sql = pd.concat([recomendacion_cliente_new_sql, 
-                                            pd.DataFrame(data,columns=recomendacion_cliente_new_sql.columns)],ignore_index=False)
+#             recomendacion_cliente_new_sql = pd.concat([recomendacion_cliente_new_sql, 
+#                                             pd.DataFrame(data,columns=recomendacion_cliente_new_sql.columns)],ignore_index=False)
 
-            # # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
+#             # # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
 
-            recomendacion_cliente_new_sql_table = recomendacion_cliente_new_sql.fillna(psycopg2.extensions.AsIs('NULL'))
+#             recomendacion_cliente_new_sql_table = recomendacion_cliente_new_sql.fillna(psycopg2.extensions.AsIs('NULL'))
 
-            # Inserting values of recomendacion_clientes into table
+#             # Inserting values of recomendacion_clientes into table
 
-            dftosql.insert_data_sql('recomendacion', recomendacion_cliente_new_sql_table, ['object_id_barrio','id_cliente','id_caract','date_time'])
+#             dftosql.insert_data_sql('recomendacion', recomendacion_cliente_new_sql_table, ['object_id_barrio','id_cliente','id_caract','date_time'])
 
 
-            # print(recomendacion_cliente_new.iloc[len(recomendacion_cliente)+i])
+#             # print(recomendacion_cliente_new.iloc[len(recomendacion_cliente)+i])
         
-        clientes = clientes_new.copy(deep=True)
-        recomendacion_cliente = recomendacion_cliente_new.copy(deep=True)
+#         clientes = clientes_new.copy(deep=True)
+#         recomendacion_cliente = recomendacion_cliente_new.copy(deep=True)
 
     
 
@@ -271,6 +298,6 @@ while True:
 
  
  
-# # # # with open("barrios_caracteristicas_final.geojson", "w") as outfile:
-# # # #      outfile.write(barrios_caracteristicas.to_json())
+# # # # # with open("barrios_caracteristicas_final.geojson", "w") as outfile:
+# # # # #      outfile.write(barrios_caracteristicas.to_json())
 

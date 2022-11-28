@@ -265,3 +265,58 @@ def inters_preferencias_barrios(file1, file2, list_caract,nbarrios):
     
     
     return file2
+
+
+
+
+
+def interseccion_casas(file1 : str, file2 : str, col: str, type : str, id_caract: int):
+
+    #############################################################
+    ## FUNCION QUE CALCULA EL NUMERO DE PUNTOS DE UNA VARIABLE ##
+    ##                     EN CADA BARRIO                      ##
+    #############################################################
+
+    barrios_gpd = file1
+
+    #CARGAMOS DATOS INCIALES DE LOS PUNTOS
+    with open(file2) as json_file2:
+        json_data2 = json.load(json_file2)
+
+    points_json=[]
+
+    for i in range(len(json_data2['features'])):
+        if json_data2['features'][i]['geometry'] is None:  # Si los datos de geometry que encuentra son NULL pasa a la siguiente linea
+            pass
+        else:  
+            points_json.append(json_data2['features'][i])
+
+    #CARGAMOS LOS DATOS CON GEOPANDAS PARA CALCULAR LA INTERSECCION
+
+
+    points_gpd = gpd.GeoDataFrame.from_features(points_json)
+    points_gpd.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
+
+
+    ## CALCULANDO INTERSECCIÓN BARRIOS CON PUNTOS DE COORDENADAS
+
+    merged = gpd.overlay(barrios_gpd, points_gpd,   how='intersection', keep_geom_type=False) # Calculamos la intersección de los polígonos de barrios con los puntos
+    merged.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
+
+    if type == 'quality':
+        merged_quality = gpd.GeoDataFrame(merged['calidad_ambiental'])
+        barrios_gpd['calidad_ambiental'] = merged_quality # Hacemos merge de la tabla Barrios con la tabla merged_areas
+        # barrios_gpd = barrios_gpd.merge(merged_quality, on='calidad_ambiental', how='left')
+
+    elif type == 'points': 
+        merged_points = merged.groupby('nombre_barrio')['object_id_barrio'].count().reset_index(name=col) # Sumamos todas las áreas de intersección por barrio
+
+        barrios_gpd = barrios_gpd.merge(merged_points, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla merged_areas
+
+    
+  
+    # barrios_gpd['object_id_barrio'] = file1['object_id_barrio']
+    
+    barrios_gpd['id_caract_'+col] = id_caract
+    
+    barrios_gpd['date_time'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
