@@ -199,18 +199,6 @@ recomendacion_cliente = varinter.inters_preferencias_barrios(barrios_caracterist
 # ## CARGA INICIAL TABLA RECOMENDACION EN POSTGRES
 
 
-# # # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
-
-# recomendacion_cliente_table = recomendacion_cliente.fillna(psycopg2.extensions.AsIs('NULL'))
-
-# # Inserting values of recomendacion_clientes into table
-
-# dftosql.insert_data_sql('recomendacion', recomendacion_cliente_table, ['object_id_barrio','id_cliente','id_caract','date_time'])
-
-
-
-
-
 ######################################################
 # COMPROBACIÓN DINÁMICA DEL GOOGLE FORM A TRAVÉS DE LA API PARA VER SI HAY CLIENTES NUEVOS
 
@@ -248,15 +236,11 @@ while True:
         
 
 
-        # 
-
         for i in range(len(recomendacion_cliente_new)-len(recomendacion_cliente)):
             ## CARGA INICIAL TABLA RECOMENDACION EN POSTGRES
             recomendacion_cliente_new_sql = pd.DataFrame(columns=recomendacion_cliente_new.columns)
             data = recomendacion_cliente_new.loc[[len(recomendacion_cliente)+i]].values.tolist()
-            print('#######')
-            print(data)
-            print('#######')
+
             recomendacion_cliente_new_sql = pd.concat([recomendacion_cliente_new_sql, 
                                             pd.DataFrame(data,columns=recomendacion_cliente_new_sql.columns)],ignore_index=False)
 
