@@ -31,7 +31,7 @@ def get_gform_clients(api_form,list_caract,nprefs):
     
     # Initialize GoogleDriveFile instance with file id
     file_obj = drive.CreateFile({'id': '15zDrSsGwwX3Kj0oZCPhUPxr0WyRUl1vku6esoxJA7n4'})
-    file_obj.GetContentFile('./modulos/responses.xls',
+    file_obj.GetContentFile(api_form,
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 
