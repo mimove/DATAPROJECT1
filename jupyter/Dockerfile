@@ -1,10 +1,11 @@
 FROM jupyter/base-notebook
 
-COPY ./data_cleaning.ypynb /home/jovyan/work/
+RUN mkdir -p datos/datos_out
+
+COPY ./data_cleaning.ipynb /home/jovyan/work/
 COPY ./requirements.txt /home/jovyan/work/
 
 WORKDIR /home/jovyan/work/
-RUN mkdir final_dataset
-RUN pip -r install requirements.txt
+RUN pip install -r requirements.txt
 
 CMD ["jupyter", "notebook", "--no-browser", "--NotebookApp.token=''", "--NotebookApp.password=''"]
