@@ -149,8 +149,11 @@ recomendacion_cliente = varinter.inters_preferencias_barrios(barrios_caracterist
 casas_df = housegen.house_generator(1000,barrios_gpd)
 
 
+# Exportamos geojson de barrios_características para calidad del dato en contenedor Jupyter
 
 
+with open(dir_datos_out + "barrios_caracteristicas_final.geojson", "w") as outfile:
+     outfile.write(barrios_caracteristicas.to_json())
 
 
 
@@ -298,6 +301,5 @@ dftosql.insert_data_sql('casas', casas_df_table, ['id_casa','geometry','price','
 
  
  
-# # # # # with open("barrios_caracteristicas_final.geojson", "w") as outfile:
-# # # # #      outfile.write(barrios_caracteristicas.to_json())
+
 

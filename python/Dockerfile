@@ -7,7 +7,7 @@ COPY ./main.py /app/
 COPY ./client_secrets.json /app/
 COPY ./modulos/ /app/modulos/
 COPY ./requirements.txt /app/
-COPY ./datos_ini/ /datos/datos_ini/
+COPY ./datos/datos_ini/ /datos/datos_ini/
 COPY .env /app/
 
 WORKDIR /app/

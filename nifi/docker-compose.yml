@@ -3,9 +3,10 @@ version: "3"
 services:
     
   nifi:
-    image: apache/nifi:latest
+    # image: apache/nifi:latest
+    build: .
     container_name: nifi
-    restart: always
+    restart: 'no'
     ports:
       - 8443:8443
     environment:
@@ -15,6 +16,6 @@ services:
   nifi-registry:
     image: apache/nifi-registry:latest
     container_name: nifiregistry
-    restart: always
+    restart: 'no'
     ports:
       - 18080:18080
