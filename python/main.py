@@ -55,8 +55,21 @@ dir_datos_out = '../datos/datos_out/'
 
 print('Cargando datos barrios')
 
-with open(dir_datos_ini + 'barris-barrios.geojson') as json_file:
-    json_data = json.load(json_file)
+
+# Esperamos a que NiFi descargue todos los archivos geojson
+
+while True:
+    
+    try:
+        with open(dir_datos_ini + 'barris-barrios.geojson') as json_file:
+            json_data = json.load(json_file)
+        
+        break
+
+    except:
+        print('Waiting for datos_ini to be filled')
+        time.sleep(20)
+
 
 barrios_json = []
 for i in range(len(json_data['features'])):

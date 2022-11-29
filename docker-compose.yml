@@ -1,6 +1,39 @@
 version: '3.5'
 
 services:
+  
+  nifi:
+    image: apache/nifi:latest
+    # build: ./nifi
+    container_name: nifi
+    restart: 'no'
+    user: root
+    ports:
+      - 8443:8443
+    environment:
+      - SINGLE_USER_CREDENTIALS_USERNAME=admin
+      - SINGLE_USER_CREDENTIALS_PASSWORD=ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB
+    volumes:
+      - ./nifi/conf/:/opt/nifi/nifi-current/conf/
+      - nifi_python:/opt/nifi/nifi-current/datos_out/
+    
+    env_file:
+      - .env
+    
+  nifi-registry:
+    image: apache/nifi-registry:latest
+    container_name: nifiregistry
+    restart: 'no'
+    ports:
+      - 18080:18080
+    
+    env_file:
+      - .env
+  
+  
+  
+  
+  
   postgres:
     container_name: postgres_container
     build: ./postgres 
@@ -9,6 +42,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Welcome01}
       POSTGRES_DB: idealista
       PGDATA: /data/postgres
+    
+    depends_on:
+      - nifi
+
     env_file:
       - .env
     
@@ -49,7 +86,9 @@ services:
     build: ./python
 
     volumes:
-      - db_barrios:/datos/datos_out
+      - nifi_python:/datos/datos_ini/
+      - db_barrios:/datos/datos_out/
+      
 
 
     restart: 'no'
@@ -65,13 +104,14 @@ services:
     container_name: jupyter_notebook
     build: ./jupyter
 
+    depends_on:
+      - postgres
     ports:
       - 10000:8888
 
     volumes:
-      - db_barrios:/home/jovyan/work/datos/datos_out
-
-
+      - db_barrios:/home/jovyan/work/datos/datos_out/
+  
 
 networks:
   postgres:
@@ -82,4 +122,5 @@ networks:
 volumes:
   postgres:
   db_barrios:
+  nifi_python:
   # pgadmin:
