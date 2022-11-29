@@ -47,6 +47,11 @@ services:
   python:
     container_name: python_main
     build: ./python
+
+    volumes:
+      - db_barrios:/datos/datos_out
+
+
     restart: 'no'
     depends_on:
       - postgres
@@ -54,6 +59,19 @@ services:
       - .env
     networks:
       - postgres
+
+
+  jupyter:
+    container_name: jupyter_notebook
+    build: ./jupyter
+
+    ports:
+      - 10000:8888
+
+    volumes:
+      - db_barrios:/home/jovyan/work/datos/datos_out
+
+
 
 networks:
   postgres:
@@ -63,4 +81,5 @@ networks:
 
 volumes:
   postgres:
+  db_barrios:
   # pgadmin:
