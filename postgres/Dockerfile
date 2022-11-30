@@ -1,5 +1,9 @@
 FROM postgres:12.1
-ENV DEBIAN_FRONTEND=noninteractive
+
+# Ponemos el FrontEnd como noninteractive para aceptar automáticamente la primera opción al instalar la librería postgis
+# Postgis es necesario para poder definir el tipo de dato GEOMETRY en POSTRESQL
+
+ENV DEBIAN_FRONTEND=noninteractive 
 
 RUN apt-get update \
     && apt-get install wget -y \
@@ -8,4 +12,3 @@ RUN apt-get update \
 
 COPY ./create_tables.sql /docker-entrypoint-initdb.d/
 
-# ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh","postgres"]
