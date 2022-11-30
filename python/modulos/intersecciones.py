@@ -9,18 +9,14 @@ import datetime
 import time
 
 
-def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_to_merge:str, new_column: str, id_caract: int):
+def interseccion_poligonos(barrios_gpd, file2 : str, area_count: str, var_to_merge:str, new_column: str, id_caract: int):
 
     ##########################################################
     ## FUNCION QUE CALCULA LA INTERSECCION DE LOS POLIGONOS ##
     ##              DE DOS ARCHIVOS GEOJSON                 ##
     ##########################################################
     
-    
-    
-    barrios_gpd = barrios_in
-
-
+    # Bucle que utilizamos para controlar cuando NiFi ha descargado todos los archivos al volumen que comparte con Python
 
     while True:
     
@@ -32,7 +28,8 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
             print('Waiting for {} to be copied from NiFi'.format(file2))
             time.sleep(5)
 
-    #Cargamos datos del archivo cuyos poligonos queremos intersectar con los de file1
+
+    #Cargamos datos del archivo cuyos poligonos queremos intersectar con los de barrios_gpd
 
     file2_json=[]
 
@@ -53,14 +50,10 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
     merged = gpd.overlay(barrios_gpd, file2_gpd, how = 'intersection') # Calculamos la intersección de los polígonos de barrios con los de el segundo archivo que le pasamos como parametro
     merged.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
 
-    #GUARDAMOS EL RESULTADO DE LA INTERSECCION EN UN NUEVO ARCHIVO GEOJSON
 
-    # with open("interseccion.geojson", "w") as outfile:
-    #     outfile.write(merged.to_json())
+
 
     #CARGA DE DATOS CON GPD PARA CALCULAR % DE INTERSECCION
-    
-
     
     if area_count == 'area':
         
@@ -95,37 +88,35 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
         barrios_gpd = barrios_gpd.merge(var_merge, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla var_merge
 
     
-    
-    
-    # barrios_gpd['object_id_barrio'] = barrios_in['object_id_barrio']
+    # Añadimos el id de la característica como nueva columna al geopandas para intersección
     
     barrios_gpd['id_caract_'+new_column] = id_caract
       
     
+
+    # Añadimos fecha y hora en la que se crea la intersección
+
     barrios_gpd['date_time'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
     
       
-    
-
-    #barrios_gpd_pervariable = barrios_gpd.groupby('nombre')['per_variable'].sum() #Sumamos todos los % de area por barrio
-
-    #barrios_gpd_pervariable.to_csv('barrios_pervariable.csv') #Convertimos el dataframe a CSV
     
     return barrios_gpd
     
     
 
 
-def interseccion_puntos(file1 : str, file2 : str, col: str, type : str, id_caract: int):
+def interseccion_puntos(barrios_gpd, file2 : str, col: str, type : str, id_caract: int):
 
     #############################################################
     ## FUNCION QUE CALCULA EL NUMERO DE PUNTOS DE UNA VARIABLE ##
     ##                     EN CADA BARRIO                      ##
     #############################################################
 
-    barrios_gpd = file1
-
     #CARGAMOS DATOS INCIALES DE LOS PUNTOS
+
+
+    # Bucle que utilizamos para controlar cuando NiFi ha descargado todos los archivos al volumen que comparte con Python
+
     while True:
     
         try:
@@ -144,22 +135,25 @@ def interseccion_puntos(file1 : str, file2 : str, col: str, type : str, id_carac
         else:  
             points_json.append(json_data2['features'][i])
 
-    #CARGAMOS LOS DATOS CON GEOPANDAS PARA CALCULAR LA INTERSECCION
 
+
+    #CARGAMOS LOS DATOS CON GEOPANDAS PARA CALCULAR LA INTERSECCION
 
     points_gpd = gpd.GeoDataFrame.from_features(points_json)
     points_gpd.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
 
 
-    ## CALCULANDO INTERSECCIÓN BARRIOS CON PUNTOS DE COORDENADAS
+
+    # CALCULANDO INTERSECCIÓN BARRIOS CON PUNTOS DE COORDENADAS
 
     merged = gpd.overlay(barrios_gpd, points_gpd,   how='intersection', keep_geom_type=False) # Calculamos la intersección de los polígonos de barrios con los puntos
     merged.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
 
+
     if type == 'quality':
         merged_quality = gpd.GeoDataFrame(merged['calidad_ambiental'])
         barrios_gpd['calidad_ambiental'] = merged_quality # Hacemos merge de la tabla Barrios con la tabla merged_areas
-        # barrios_gpd = barrios_gpd.merge(merged_quality, on='calidad_ambiental', how='left')
+
 
     elif type == 'points': 
         merged_points = merged.groupby('nombre_barrio')['object_id_barrio'].count().reset_index(name=col) # Sumamos todas las áreas de intersección por barrio
@@ -168,51 +162,23 @@ def interseccion_puntos(file1 : str, file2 : str, col: str, type : str, id_carac
 
     
   
-    # barrios_gpd['object_id_barrio'] = file1['object_id_barrio']
-    
+    # Añadimos el id de la característica como nueva columna al geopandas para intersección
+
     barrios_gpd['id_caract_'+col] = id_caract
     
     barrios_gpd['date_time'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
     
-    #print(merged.loc[:,'calidad_ambiental'])
-
-
-    ## GUARDANDO RESULTADO EN ARCHIVO .geojson
-                                              
-    # with open(f"interseccion_{col}.geojson", "w") as outfile:
-    #     outfile.write(merged.to_json())
-
-    #CARGANDO DATOS CON GEOPANDAS PARA VER LA INTERSECCION
-
-    # do the spatial join, index right is the polygon idx values
-    
-    # sjoin_gdf = gpd.sjoin(points_gpd, barrios_gpd)
-    # sjoin_gdf.crs = 'epsg:4326'
-
-    # # count the values with value counts
-    # count_dict = sjoin_gdf['index_right'].value_counts().to_dict()
-
-
-    # # map the count_dict back to poly_gdf as new point count column 
-    # # alternatively you could do a join here, but new col name is nice
-    # barrios_gpd[col] = barrios_gpd.index.map(count_dict)
-
-    # #SE CREA LA COLUMNA QUE CUENTA EL NUMERO DE PUNTOS POR BARRIO SEGUN LA VARIABLE
-    # barrios_gpd_points = barrios_gpd.groupby('nombre')[col].sum() 
-
-    #SEGUN EL TIPO DE VARIABLE GENERAMOS OUTPUT GEOJSON
-    # with open(f"barrios_per{col}.geojson", "w") as outfile:
-    #     outfile.write(barrios_gpd.to_json())
 
     return barrios_gpd
 
 
 
-def interpolacion_puntos(file1 : str, file2 : str, col: str, id_caract: int):
+def interpolacion_puntos(barrios_gpd : str, file2 : str, col: str, id_caract: int):
     
-    barrios_gpd = file1
 
     #CARGAMOS DATOS INCIALES DE LOS PUNTOS
+    # Bucle que utilizamos para controlar cuando NiFi ha descargado todos los archivos al volumen que comparte con Python
+
     while True:
     
         try:
@@ -251,14 +217,15 @@ def interpolacion_puntos(file1 : str, file2 : str, col: str, id_caract: int):
     sjoin_gdf = sjoin_gdf[~sjoin_gdf['nombre_barrio'].duplicated()]
 
 
-    # print(len(sjoin_gdf.index))
 
-    # barrios_gpd.index = merged_quality.index
+    # Creamos nueva columan en barrios_gpd con el sjoin de la extrapolación
 
     barrios_gpd[col] = gpd.GeoDataFrame(sjoin_gdf[col])
 
+    # Aseguramos proyección en coordenadas GPS
 
     barrios_gpd = barrios_gpd.to_crs ('epsg:4326')
+
     
     barrios_gpd['id_caract_'+col] = id_caract
     
@@ -270,21 +237,21 @@ def interpolacion_puntos(file1 : str, file2 : str, col: str, id_caract: int):
 
 
 
-def inters_preferencias_barrios(file1, file2, list_caract,nbarrios):
+def inters_preferencias_barrios(barrios_gpd, file2, list_caract,nbarrios):
     
+    # Definimos DataFrame para el top nbarrios del cliente
+
     barrios_top = pd.DataFrame(columns=['object_id_barrio', 'id_caract', 'val_carac','date_time'])
 
+    # Colocamos los valores del top nbarrios obtenidos de barrios_gpd en el nuevo DataFrame
+
     for i in range(len(list_caract)):
-        data = file1[['object_id_barrio','id_caract_'+list_caract[i], list_caract[i],'date_time']].sort_values([list_caract[i]], axis = 0, ascending = False).head(nbarrios).values.tolist()
+        data = barrios_gpd[['object_id_barrio','id_caract_'+list_caract[i], list_caract[i],'date_time']].sort_values([list_caract[i]], axis = 0, ascending = False).head(nbarrios).values.tolist()
         barrios_top = pd.concat([barrios_top,pd.DataFrame(data, columns=barrios_top.columns)],ignore_index=True)
     
     
     file2 = pd.merge(file2, barrios_top, how="left", on=['id_caract'])
         
-          
-    # file2['object_id_barrio'] = left_merged['object_id_barrio']
-    # file2['date_time'] = left_merged['date_time']
-    
     
     return file2
 
@@ -292,60 +259,61 @@ def inters_preferencias_barrios(file1, file2, list_caract,nbarrios):
 
 
 
-def interseccion_casas(file1 : str, file2 : str, col: str, type : str, id_caract: int):
+# def interseccion_casas(barrios_gpd, file2 : str, col: str, type : str, id_caract: int):
 
-    #############################################################
-    ## FUNCION QUE CALCULA EL NUMERO DE PUNTOS DE UNA VARIABLE ##
-    ##                     EN CADA BARRIO                      ##
-    #############################################################
-
-    barrios_gpd = file1
-
-    #CARGAMOS DATOS INCIALES DE LOS PUNTOS
-    while True:
-    
-        try:
-            with open(file2) as json_file2:
-                json_data2 = json.load(json_file2)
-            break
-        except:
-            print('Waiting for {} to be copied from NiFi'.format(file2))
-            time.sleep(5)
-
-    points_json=[]
-
-    for i in range(len(json_data2['features'])):
-        if json_data2['features'][i]['geometry'] is None:  # Si los datos de geometry que encuentra son NULL pasa a la siguiente linea
-            pass
-        else:  
-            points_json.append(json_data2['features'][i])
-
-    #CARGAMOS LOS DATOS CON GEOPANDAS PARA CALCULAR LA INTERSECCION
-
-
-    points_gpd = gpd.GeoDataFrame.from_features(points_json)
-    points_gpd.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
-
-
-    ## CALCULANDO INTERSECCIÓN BARRIOS CON PUNTOS DE COORDENADAS
-
-    merged = gpd.overlay(barrios_gpd, points_gpd,   how='intersection', keep_geom_type=False) # Calculamos la intersección de los polígonos de barrios con los puntos
-    merged.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
-
-    if type == 'quality':
-        merged_quality = gpd.GeoDataFrame(merged['calidad_ambiental'])
-        barrios_gpd['calidad_ambiental'] = merged_quality # Hacemos merge de la tabla Barrios con la tabla merged_areas
-        # barrios_gpd = barrios_gpd.merge(merged_quality, on='calidad_ambiental', how='left')
-
-    elif type == 'points': 
-        merged_points = merged.groupby('nombre_barrio')['object_id_barrio'].count().reset_index(name=col) # Sumamos todas las áreas de intersección por barrio
-
-        barrios_gpd = barrios_gpd.merge(merged_points, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla merged_areas
+#     #############################################################
+#     ## FUNCION QUE CALCULA EL LAS CASAS QUE SE HAN GENERADO    ##
+#     ##       ALEATOREAMENTE Y PERTENECEN A CADA BARRIO         ##
+#     #############################################################
 
     
-  
-    # barrios_gpd['object_id_barrio'] = file1['object_id_barrio']
+
+#     #CARGAMOS DATOS INCIALES DE LOS PUNTOS
+#     # Bucle que utilizamos para controlar cuando NiFi ha descargado todos los archivos al volumen que comparte con Python
+
+#     while True:
     
-    barrios_gpd['id_caract_'+col] = id_caract
+#         try:
+#             with open(file2) as json_file2:
+#                 json_data2 = json.load(json_file2)
+#             break
+#         except:
+#             print('Waiting for {} to be copied from NiFi'.format(file2))
+#             time.sleep(5)
+
+#     points_json=[]
+
+#     for i in range(len(json_data2['features'])):
+#         if json_data2['features'][i]['geometry'] is None:  # Si los datos de geometry que encuentra son NULL pasa a la siguiente linea
+#             pass
+#         else:  
+#             points_json.append(json_data2['features'][i])
+
+
+#     #CARGAMOS LOS DATOS CON GEOPANDAS PARA CALCULAR LA INTERSECCION
+
+
+#     points_gpd = gpd.GeoDataFrame.from_features(points_json)
+#     points_gpd.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
+
+
+#     ## CALCULANDO INTERSECCIÓN BARRIOS CON PUNTOS DE COORDENADAS
+
+#     merged = gpd.overlay(barrios_gpd, points_gpd,   how='intersection', keep_geom_type=False) # Calculamos la intersección de los polígonos de barrios con los puntos
+#     merged.crs = 'epsg:4326' #Aseguramos que la proyección es la adecuada para coordenadas GPS
+
+#     if type == 'quality':
+#         merged_quality = gpd.GeoDataFrame(merged['calidad_ambiental'])
+#         barrios_gpd['calidad_ambiental'] = merged_quality # Hacemos merge de la tabla Barrios con la tabla merged_areas
+#         # barrios_gpd = barrios_gpd.merge(merged_quality, on='calidad_ambiental', how='left')
+
+#     elif type == 'points': 
+#         merged_points = merged.groupby('nombre_barrio')['object_id_barrio'].count().reset_index(name=col) # Sumamos todas las áreas de intersección por barrio
+
+#         barrios_gpd = barrios_gpd.merge(merged_points, on='nombre_barrio', how='left') # Hacemos merge de la tabla Barrios con la tabla merged_areas
+
     
-    barrios_gpd['date_time'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+    
+#     barrios_gpd['id_caract_'+col] = id_caract
+    
+#     barrios_gpd['date_time'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
