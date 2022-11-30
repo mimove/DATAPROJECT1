@@ -228,14 +228,10 @@ recomendacion_cliente_table = recomendacion_cliente.fillna(psycopg2.extensions.A
 
 # Inserting values of recomendacion_clientes into table
 
-# print(barrios_caracteristicas['date_time'])
-
-# print(recomendacion_cliente['date_time'])
-
 dftosql.insert_data_sql('recomendacion', recomendacion_cliente_table, ['object_id_barrio','id_cliente','id_caract','date_time'])
 
 
-# # ## CARGA INICIAL TABLA CASAS EN POSTGRES
+## CARGA INICIAL TABLA CASAS EN POSTGRES
 
 casas_df_table = casas_df.fillna(psycopg2.extensions.AsIs('NULL'))
 
@@ -243,7 +239,7 @@ dftosql.insert_data_sql('casas', casas_df_table, ['id_casa','geometry','price','
 
 
 # ######################################################
-# # COMPROBACIÓN DINÁMICA DEL GOOGLE FORM A TRAVÉS DE LA API PARA VER SI HAY CLIENTES NUEVOS
+# COMPROBACIÓN DINÁMICA DEL GOOGLE FORM A TRAVÉS DE LA API PARA VER SI HAY CLIENTES NUEVOS
 
 
 while True:
@@ -273,7 +269,7 @@ while True:
 
             clientes_new_sql_table = clientes_new_sql.fillna(psycopg2.extensions.AsIs('NULL'))
 
-            #     # Inserting values of clientes into table
+            #  Inserting values of clientes into table
 
             dftosql.insert_data_sql('clientes', clientes_new_sql_table, ['id_cliente',*[i for i in list_caract]])
         
@@ -287,7 +283,7 @@ while True:
             recomendacion_cliente_new_sql = pd.concat([recomendacion_cliente_new_sql, 
                                             pd.DataFrame(data,columns=recomendacion_cliente_new_sql.columns)],ignore_index=False)
 
-            # # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
+            # Ensuring that NaN are transformed to NULL before exporting DataFrame to SQL
 
             recomendacion_cliente_new_sql_table = recomendacion_cliente_new_sql.fillna(psycopg2.extensions.AsIs('NULL'))
 
@@ -295,9 +291,6 @@ while True:
 
             dftosql.insert_data_sql('recomendacion', recomendacion_cliente_new_sql_table, ['object_id_barrio','id_cliente','id_caract','date_time'])
 
-
-            # print(recomendacion_cliente_new.iloc[len(recomendacion_cliente)+i])
-        
         clientes = clientes_new.copy(deep=True)
         recomendacion_cliente = recomendacion_cliente_new.copy(deep=True)
 
