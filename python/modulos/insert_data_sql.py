@@ -1,14 +1,22 @@
 def insert_data_sql(table: str, input_df:str, columns: list):
+
     import os
     import psycopg2
     from psycopg2 import sql
     
+    #########################
+    ## Definición de variables cuando se utiliza el código main.py python dockerizado
+
     username = os.environ['DB_USER']
     password = os.environ['DB_PASSWORD']
     hostname = os.environ['DB_HOST']
     port = os.environ['DB_PORT']
     db = os.environ['DB_NAME']
     
+    
+    #########################
+    ## Definición de variables cuando se utiliza el código main.py python sin dockerizar
+
     # username = 'postgres'
     # password = 'Welcome01'
     # hostname = 'localhost'
@@ -28,15 +36,18 @@ def insert_data_sql(table: str, input_df:str, columns: list):
         
         count = 0
         for i in range(len(input_df)):
-            # print(i)
-            insertion_query = sql.SQL("INSERT INTO " + table + " VALUES ({})").format(sql.SQL(', ').join(sql.Placeholder()*len(columns)))
-            # print([str(input_df[columns[j]][i]) if 'POLYGON' in str(input_df[columns[j]][i]) else input_df[columns[j]][i]  for j in range(len(columns))])    
-            # print([str(input_df[columns[j]][i]) if 'POINT' in str(input_df[columns[j]][i]) else input_df[columns[j]][i] for j in range(len(columns))])
-            # cursor.execute(insertion_query, [str(input_df[columns[j]][i]) if 'POINT' in str(input_df[columns[j]][i]) else input_df[columns[j]][i] for j in range(len(columns))])
 
+            # Definición de query con el nº de columnas que queremos insertar
+
+            insertion_query = sql.SQL("INSERT INTO " + table + " VALUES ({})").format(sql.SQL(', ').join(sql.Placeholder()*len(columns)))
+            
+
+            # Insertamos los valores que nos vienen desde el geoDataFrame que llamamos en la función. El list comprehension se utiliza para generar una lista en una sola
+            # linea con las condiciones if de detectar si la columna es del tipo "geometry" y si tiene en ese columna polígonos o puntos
+             
             cursor.execute(insertion_query, [str(input_df[columns[j]][i]) if any(c in str(input_df[columns[j]][i]) for c in ('POLYGON','POINT')) else input_df[columns[j]][i] for j in range(len(columns))])
 
-            # print('Here')
+            
             connection.commit()
             count += cursor.rowcount
         
@@ -51,12 +62,19 @@ def create_caracteristicas_table():
     import os
     import psycopg2
     
+
+    #########################
+    ## Definición de variables cuando se utiliza el código main.py python dockerizado
     
     username = os.environ['DB_USER']
     password = os.environ['DB_PASSWORD']
     hostname = os.environ['DB_HOST']
     port = os.environ['DB_PORT']
     db = os.environ['DB_NAME']
+    
+
+    #########################
+    ## Definición de variables cuando se utiliza el código main.py python sin dockerizar
     
     # username = 'postgres'
     # password = 'Welcome01'

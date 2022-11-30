@@ -4,4 +4,6 @@ FROM apache/nifi:latest
 # ejecutar automáticamente NiFi con el flujo que hemos creado para descargar los archivos de OpenData Valencia
 
 COPY ./start.sh /opt/nifi/scripts
+# COPY ./initial.sh /opt/nifi/nifi-current/initial.sh
 
+# ENTRYPOINT ["/opt/nifi/nifi-current/initial.sh"]
