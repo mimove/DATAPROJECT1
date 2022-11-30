@@ -3,7 +3,6 @@ version: '3.5'
 services:
   
   nifi:
-    # image: apache/nifi:latest
     build: ./nifi
     container_name: nifi
     restart: 'no'
@@ -14,6 +13,7 @@ services:
     #   - SINGLE_USER_CREDENTIALS_USERNAME=admin
     #   - SINGLE_USER_CREDENTIALS_PASSWORD=ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB
     volumes:
+      # Hacemos bind mount de la carpeta conf_local donde está definido el flujo NiFi que neceistamos
       - ./nifi/conf_local/:/opt/nifi/nifi-current/conf/
       - nifi_python:/opt/nifi/nifi-current/datos_out/
     
@@ -29,10 +29,6 @@ services:
     
     env_file:
       - .env
-  
-  
-  
-  
   
   postgres:
     container_name: postgres_container
@@ -61,6 +57,9 @@ services:
       
     
     restart: unless-stopped
+
+
+  ### Dejamos comentado pgadmin por si alguien quiere utilizarlo para hacer consultas a la BD
 
   # pgadmin:
   #   container_name: pgadmin_container
