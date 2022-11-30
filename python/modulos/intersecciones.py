@@ -6,6 +6,7 @@ import rtree
 from descartes import PolygonPatch
 import random
 import datetime
+import time
 
 
 def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_to_merge:str, new_column: str, id_caract: int):
@@ -21,8 +22,15 @@ def interseccion_poligonos(barrios_in : str, file2 : str, area_count: str, var_t
 
 
 
-    with open(file2) as json_file2:
-        json_data2 = json.load(json_file2)
+    while True:
+    
+        try:
+            with open(file2) as json_file2:
+                json_data2 = json.load(json_file2)
+            break
+        except:
+            print('Waiting for {} to be copied from NiFi'.format(file2))
+            time.sleep(5)
 
     #Cargamos datos del archivo cuyos poligonos queremos intersectar con los de file1
 
@@ -118,8 +126,15 @@ def interseccion_puntos(file1 : str, file2 : str, col: str, type : str, id_carac
     barrios_gpd = file1
 
     #CARGAMOS DATOS INCIALES DE LOS PUNTOS
-    with open(file2) as json_file2:
-        json_data2 = json.load(json_file2)
+    while True:
+    
+        try:
+            with open(file2) as json_file2:
+                json_data2 = json.load(json_file2)
+            break
+        except:
+            print('Waiting for {} to be copied from NiFi'.format(file2))
+            time.sleep(5)
 
     points_json=[]
 
@@ -198,8 +213,15 @@ def interpolacion_puntos(file1 : str, file2 : str, col: str, id_caract: int):
     barrios_gpd = file1
 
     #CARGAMOS DATOS INCIALES DE LOS PUNTOS
-    with open(file2) as json_file2:
-        json_data2 = json.load(json_file2)
+    while True:
+    
+        try:
+            with open(file2) as json_file2:
+                json_data2 = json.load(json_file2)
+            break
+        except:
+            print('Waiting for {} to be copied from NiFi'.format(file2))
+            time.sleep(5)
 
     points_json=[]
 
@@ -280,8 +302,15 @@ def interseccion_casas(file1 : str, file2 : str, col: str, type : str, id_caract
     barrios_gpd = file1
 
     #CARGAMOS DATOS INCIALES DE LOS PUNTOS
-    with open(file2) as json_file2:
-        json_data2 = json.load(json_file2)
+    while True:
+    
+        try:
+            with open(file2) as json_file2:
+                json_data2 = json.load(json_file2)
+            break
+        except:
+            print('Waiting for {} to be copied from NiFi'.format(file2))
+            time.sleep(5)
 
     points_json=[]
 

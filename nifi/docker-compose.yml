@@ -3,8 +3,10 @@ version: "3"
 services:
     
   nifi:
-    image: apache/nifi:latest
+    # image: apache/nifi:latest
+    build: .
     container_name: nifi
+    user: root
     restart: 'no'
     
     ports:
@@ -13,7 +15,7 @@ services:
       - SINGLE_USER_CREDENTIALS_USERNAME=admin
       - SINGLE_USER_CREDENTIALS_PASSWORD=ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB
     volumes:
-      - ./conf/:/opt/nifi/nifi-current/conf/
+      - ./conf_local/:/opt/nifi/nifi-current/conf/
     
   nifi-registry:
     image: apache/nifi-registry:latest
