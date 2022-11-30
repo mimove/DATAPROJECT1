@@ -1,7 +1,7 @@
 # DATA PROJECT 1
 
 <p align="center">
-<img src="https://datos.gob.es/sites/default/files/styles/success_image/public/success/images/idealista.jpg?itok=uX21SrOq" width=300px>
+<img src="https://datos.gob.es/sites/default/files/styles/success_image/public/success/images/idealista.jpg?itok=uX21SrOq" width=250px>
 </p>
 
 ## Descripción
@@ -61,6 +61,47 @@ El diagrama con la arquitectura es el siguiente:
 <p align="center">
 <img src="./.images/docker-compose_test.png" width=500px>
 </p>
+
+<br>
+
+## Ejecución del proyecto
+
+Para ejecutar el proyecto simplemente hay que clonar el repositorio y ejecutar*:
+
+```sh
+docker compose up
+```
+
+Esto levanta todos los contenedores y asigna los volumenes y los puertos a cada uno de ellos. Para ver como funciona el código completo se puede consultar el siguiente video de YouTube:
+
+<https://www.youtube.com/watch?v=w-ZNPGcKnTY&ab_channel=FanWu>
+
+
+
+El contenedor NiFi se puede comprobar desde la siguiente dirección:
+
+<http://localhost:8443/nifi>
+
+El contenedor Jupyter se puede comprobar desde la siguiente dirección:
+
+<http://localhost:10000>
+
+
+Para cargar el archivo en Tableu hay que conectarse a la base de datos con los siguientes campos y abrir el archivo de la carpeta [tableau](./tableau):
+
+| Campo | Texto a completar |
+|----------|---------|
+| <b>Server Address*</b> | localhost  |
+| <b>Port*</b> | 5432  |
+| <b>Database*</b> | idealista  |
+| <b>Username*</b> | postgres  |
+| <b>Password</b> | Welcome01  |
+
+
+
+<br>
+
+*El código funciona utilizando la distribución WSL:Ubuntu. Desde Windows existe un problema con el script start.sh de NiFi a la hora de copiarlo al contenedor
 
 
 
