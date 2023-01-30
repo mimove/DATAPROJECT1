@@ -47,7 +47,9 @@ services:
     
     volumes:
       - postgres:/data/postgres
-      - ./postgres/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql    
+      - ./postgres/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql   
+    
+     
     ports:
       - "5432:5432"
 

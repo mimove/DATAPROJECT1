@@ -64,6 +64,15 @@ El diagrama con la arquitectura es el siguiente:
 
 <br>
 
+
+Por otro lado, el modelo de datos consta de 6 tablas: Casas, Barrios, Recomendación, Cliente, Barrio_Características y Características, siendo la tabla principal la de Recomendación, ya que es la que unifica la información de los clientes con los barrios que le corresponden para cada característica según el estilo de vida que han respondido en el cuestionario.
+
+<p align="center">
+<img src="./.images/DB_image.png" width=500px>
+</p>
+
+<br>
+
 ## Ejecución del proyecto
 
 Para ejecutar el proyecto simplemente hay que clonar el repositorio y ejecutar*:
